@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <ul>
+        <li>后翼弃兵，自我实现</li>
+        <li>后翼弃兵，自我实现</li>
+        <li>后翼弃兵，自我实现</li>
+        <li>后翼弃兵，自我实现</li>
+    </ul>
+
+    <ul id="nav" >
+        <li>不破不立！</li>
+        <li>不破不立！</li>
+        <li>不破不立！</li>
+        <li>不破不立！</li>
+        <li>不破不立！</li>        
+    </ul>
+
+    <script>
+        // 返回的是获取过来元素的集合 伪数组形式进行呈现
+        var lis = document.getElementsByTagName('li');
+        console.log(lis);
+        console.log(lis[0]);
+
+        // for循环打印
+        for(var i = 0; i < lis.length; i++)
+        {
+            console.log(lis[i]);
+        }
+
+        // element.getElementsByTagName()可以得到这个元素里面的某些标签
+        var nav = document.getElementById('nav');
+        var navLis = nav.getElementsByTagName('li');
+        console.log(navLis);
+
+    </script>
+    
+</body>
+</html>

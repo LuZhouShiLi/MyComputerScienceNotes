@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        .box{
+            width:400px;
+            border-bottom:1px solid #ccc;
+            margin:100px auto;
+        }
+
+        .box input{
+            width:370px;
+            height:30px;
+            border:0;
+            outline:none;
+        }
+
+        .box img{
+            position: absolute;
+            top: 100px;
+            right: 750px;
+            width: 24px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class = "box">
+        <label for = "">
+            <img src="images/close.jpg" alt = "" id = "eye">
+        </label>
+        <input type = "password" name = "" id = "pwd">
+    </div>
+
+    <script>
+        // 获取元素
+        // 根据id选择器 来获取元素
+        // 获取元素之后 才可以更改属性
+        var eye = document.getElementById('eye');
+        var pwd = document.getElementById('pwd');
+        var flag = 0;// 密码框切换标志
+        // 注册事件  处理程序
+        eye.onclick = function(){
+            // 点击一次之后 flag一定要变化
+            if(flag == 0)
+            {
+                pwd.type = 'text';// 更改类别属性：文本框
+                eye.src = 'images/open.jpg';
+                flag = 1;
+            }
+            else{
+                pwd.type = 'password';// 更改标志
+                eye.src = 'images/close.jpg';
+                flag = 0;
+            }
+        }
+    </script>
+
+</body>
+</html>

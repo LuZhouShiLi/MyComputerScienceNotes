@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        input{
+            color:#999;
+        }
+    </style>
+
+</head>
+
+<body>
+    <input type = "text" value = "手机">
+    <script>
+        // 鼠标点进去获取焦点
+        // 获取元素
+        var text = document.querySelector('input');
+        // 注册事件  获得焦点事件 onfocus
+        text.onfocus = function(){
+            // console.log('得到了焦点');
+            // 如果里面的内容时默认文字 直接清空
+            if(this.value === '手机')
+            {
+                this.value = '';// 直接使用this  因为事件注册者是text
+            }
+            // 获得焦点需要把文本框里面的文字颜色变深
+            this.style.color = '#333';
+        }
+        // 注册事件 失去了焦点事件 onblur
+        text.onblur = function(){
+            // console.log('失去了焦点');
+            // 如果失去焦点  判断表单内容是否为空，如果为空 则表单内容改为默认文字
+            if(this.value === '')
+            {
+                this.value = '手机';
+            }
+            // 失去焦点需要把文本框里面的文字颜色变成浅色
+            this.style.color = '#999';
+        }
+    </script>
+</body>
+</html>

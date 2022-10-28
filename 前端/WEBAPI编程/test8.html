@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>xia</div>
+    <p>
+        我是文字
+        <span>123</span>
+    </p>
+    <script>
+        // innertext和innerHTML的区别
+        // 1. innerText  不识别Html标签  去除空格和换行
+        var div = document.querySelector('div');
+        div.innerText = '今天是个好日子';// 修改元素内容  直接赋值
+        div.innerText = '<strong>hhhhh<strong>';// 没有加粗
+        
+        // 2 innerHtml  识别html标签  W3C标准
+        div.innerHTML = '<strong>今天是：</strong>2019';
+
+        // 这两个属性是可读可写的  可以获取元素里面的内容
+        var p = document.querySelector('p');
+        console.log(p.innerText);// 去除空格和换行
+        console.log(p.innerHTML);// 保留空格和换行
+
+    </script>
+    
+</body>
+</html>

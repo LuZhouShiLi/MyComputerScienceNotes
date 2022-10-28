@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        div{
+            width:200px;
+            height:200px;
+            background-color:pink;
+        }
+
+        .change{
+            background-color:purple;
+            color:#fff;
+            font-size:25px;
+            margin-top:100px;
+        }
+    </style>
+
+</head>
+<body>
+    <div>
+        文本
+    </div>
+
+    <script>
+        // JS里面的样式采取驼峰命名法，比如fontsize backgroundColor
+        // JS修改style样式操作，产生的是行内样式，css权重比较高
+        var div = document.querySelector('div');
+        // 注册事件  处理程序
+        div.onclick = function(){
+            // div.style里面的属性 采用驼峰命名法
+            // 使用element.style获得修改元素样式
+            // this.style.backgroundColor = 'purple';
+            // this.style.color = '#fff';
+            // this.style.width = '250px';
+            // this.style.marginTop = '100px';
+
+            // 我们可以通过修改元素的className更改元素的样式 适合于样式比较多或者功能复杂的情况
+            this.className = 'change';// 点击鼠标 给元素添加类名即可。 然后css修改样式
+            // 直接覆盖原先的类名
+        }
+    </script>
+
+</body>
+</html>

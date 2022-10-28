@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class = "box">盒子1</div>
+    <div class = "box">盒子2</div>
+
+    <div id = "nav">
+        <ul>
+            <li>首页</li>
+            <li>产品</li>
+        </ul>
+    </div>
+
+    <script>
+        // 根据类名获得某些元素的集合
+        var boxs = document.getElementsByClassName('box');
+        console.log(boxs);
+        
+        // 使用querySelector 返回指定选择器的第一个元素对象
+        var firstbox = document.querySelector('.box');
+        console.log(firstbox);
+
+        var nav = document.querySelector('#nav');// 选择器有很多加上# 判断出是id选择器
+        console.log(nav);
+
+        var li = document.querySelector('li');
+        console.log(li);
+
+
+        // querySelectorAll() 返回指定选择器的所有元素对象集合
+        var allBox = document.querySelectorAll('.box');
+        console.log(allBox);
+        
+        // 返回所有标签li的对象集合
+        var lis = document.querySelectorAll('li');
+        console.log(lis);
+
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+

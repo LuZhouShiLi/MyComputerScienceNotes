@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        div{
+            width:600px;
+            margin: 100px auto;
+        }
+        .message{
+            display:inline-block;
+            font-size:12px;
+            color:#999;
+            background:url(images/tao.png) no-repeat left center;
+            padding-left:20px;
+        }
+
+        .wrong{
+            color:red;
+            background-image:url(images/open.jpg);
+        }
+
+        .right{
+            color:green;
+            background-image:url(images/a.png);
+        }
+
+    </style>
+
+</head>
+<body>
+    <div>
+        <input type = "password" class = "ipt">
+        <p class = "message">请输入6~16位密码</p>
+    </div>
+
+    <script>
+        var ipt = document.querySelector('.ipt');
+        var message = document.querySelector('.message');
+
+        // 注册事件 失去焦点 判断表单里面值得长度 
+        ipt.onblur = function(){
+            // 根据表单里面值的长度 ipt.value.length
+            if(this.value.length < 6 || this.value.length > 16)
+            {
+                // console.log('错误');
+                message.className = 'message wrong';  // 通过更改类名来修改样式
+                message.innerHTML = '您输入的位数不对,要求6~16位';
+            }
+            else
+            {
+                // 输入的信息是正确的
+                message.className = 'message right';
+                message.innerHTML = '您输入的位数是正确的';
+            }
+        }
+
+    </script>
+    
+</body>
+</html>

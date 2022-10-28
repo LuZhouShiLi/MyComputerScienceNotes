@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+    <style>
+        img{
+            width:300px;
+        }
+    </style>
+
+</head>
+<body>
+    <img src = "images/a.png" alt = "">
+    <div>上午好</div>
+    <script>
+        // 根据系统不同时间来判断，所以需 要用到日期内置对象
+        // 利用多分枝语句来设置不同的图片
+        // 需要一个图片，并且根据时间修改图片，就需要用到操作元素src属性
+        // 需要一个div元素，显示不同问候语，修改元素内容即可
+
+        // 获取元素 然后才可以操纵元素属性
+        var img = document.querySelector('img');
+        var div = document.querySelector('div');
+
+        // 得到当前的小时数
+        var date = new Date();// 获取日期对象
+        var h = date.getHours();// 获取小时数
+
+        // 判断小时数改变图片和文字信息
+        if(h < 12)
+        {
+            img.src = 'images/a.png';
+            div.innerHTML = '亲，上午好，好好写代码';// 修改标签内容
+        }
+        else if(h < 18)
+        {
+            //走到这里 h一定大于等于12
+            img.src = 'images/b.jpg';
+            div.innerHTML = '亲，下午好，写好代码，改变世界';//修改标签内容
+        }
+        else
+        {
+            img.src = 'images/c.jpg';
+            div.innerHTML = '亲，晚上好,早点休息';
+        }
+
+    </script>
+   
+</body>
+</html>

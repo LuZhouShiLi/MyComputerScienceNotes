@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button>显示当前系统时间</button>
+    <div>某个时间</div>
+    <p>123</p>
+
+    <script>
+        // 当我们点击按钮  div的文字会发生变化
+
+        // 1 获取元素
+        var btn = document.querySelector('button')
+        var div = document.querySelector('div');
+
+        // 2 注册事件
+        btn.onclick = function(){
+            // 换成系统的时间
+            // div.innerText = '2019-6-6';
+            div.innerText = getDate();// 返回一个字符串
+        }
+
+        function getDate(){
+            // 获取一个时间对象
+            var date = new Date();
+            // 获取当前时间
+            var year = date.getFullYear();// 获取年份
+            var month = date.getMonth() + 1;// 获取月份  因为返回的月份小一个月 + 1
+            var dates = date.getDate(); // 获取日
+            var arr = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+            var day = date.getDay();// 获取星期几  返回的是整数值
+            return '今天是：' + year + '年' + month + '月' + dates + '日 ' + arr[day];
+        }
+
+        var p = document.querySelector('p');
+        p.innerText = getDate();// 直接修改
+
+    </script>
+</body>
+</html>

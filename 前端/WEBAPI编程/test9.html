@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button id = "ldh">刘德华</button>
+    <button id = "zxy">张学友</button>  <br>
+    <img src="images/ldh.jpg" alt = "" title = "刘德华">
+
+    <script>
+        // 修改元素属性  src
+        // 获取元素对象
+        var ldh = document.getElementById('ldh');
+        var zxy = document.getElementById('zxy');
+        var img = document.querySelector('img');// 根据标签类型获取
+
+        // 注册事件
+        zxy.onclick = function(){
+            img.src = 'images/zxy.jpg';// 文件路径
+        }
+
+        ldh.onclick = function(){
+            img.src = 'images/ldh.jpg';
+            img.title = "刘德华";
+        }
+    </script>
+</body>
+</html>
