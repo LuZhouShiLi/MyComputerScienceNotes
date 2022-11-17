@@ -1,0 +1,326 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+<title>Linux系统编程-第02天（vim-gcc-动态库静态库）</title><link href='https://fonts.loli.net/css?family=Open+Sans:400italic,700italic,700,400&subset=latin,latin-ext' rel='stylesheet' type='text/css' /><style type='text/css'>html {overflow-x: initial !important;}:root { --bg-color:#ffffff; --text-color:#333333; --select-text-bg-color:#B5D6FC; --select-text-font-color:auto; --monospace:"Lucida Console",Consolas,"Courier",monospace; }
+html { font-size: 14px; background-color: var(--bg-color); color: var(--text-color); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+body { margin: 0px; padding: 0px; height: auto; bottom: 0px; top: 0px; left: 0px; right: 0px; font-size: 1rem; line-height: 1.42857; overflow-x: hidden; background: inherit; }
+iframe { margin: auto; }
+a.url { word-break: break-all; }
+a:active, a:hover { outline: 0px; }
+.in-text-selection, ::selection { text-shadow: none; background: var(--select-text-bg-color); color: var(--select-text-font-color); }
+#write { margin: 0px auto; height: auto; width: inherit; word-break: normal; word-wrap: break-word; position: relative; white-space: normal; overflow-x: visible; padding-top: 40px; }
+#write.first-line-indent p { text-indent: 2em; }
+#write.first-line-indent li p, #write.first-line-indent p * { text-indent: 0px; }
+#write.first-line-indent li { margin-left: 2em; }
+.for-image #write { padding-left: 8px; padding-right: 8px; }
+body.typora-export { padding-left: 30px; padding-right: 30px; }
+.typora-export .footnote-line, .typora-export li, .typora-export p { white-space: pre-wrap; }
+@media screen and (max-width: 500px) {
+  body.typora-export { padding-left: 0px; padding-right: 0px; }
+  #write { padding-left: 20px; padding-right: 20px; }
+  .CodeMirror-sizer { margin-left: 0px !important; }
+  .CodeMirror-gutters { display: none !important; }
+}
+#write li > figure:first-child { margin-top: -20px; }
+#write ol, #write ul { position: relative; }
+img { max-width: 100%; vertical-align: middle; }
+button, input, select, textarea { color: inherit; font-style: inherit; font-variant: inherit; font-weight: inherit; font-stretch: inherit; font-size: inherit; line-height: inherit; font-family: inherit; }
+input[type="checkbox"], input[type="radio"] { line-height: normal; padding: 0px; }
+*, ::after, ::before { box-sizing: border-box; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p, #write pre { width: inherit; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p { position: relative; }
+h1, h2, h3, h4, h5, h6 { break-after: avoid-page; break-inside: avoid; orphans: 2; }
+p { orphans: 4; }
+h1 { font-size: 2rem; }
+h2 { font-size: 1.8rem; }
+h3 { font-size: 1.6rem; }
+h4 { font-size: 1.4rem; }
+h5 { font-size: 1.2rem; }
+h6 { font-size: 1rem; }
+.md-math-block, .md-rawblock, h1, h2, h3, h4, h5, h6, p { margin-top: 1rem; margin-bottom: 1rem; }
+.hidden { display: none; }
+.md-blockmeta { color: rgb(204, 204, 204); font-weight: 700; font-style: italic; }
+a { cursor: pointer; }
+sup.md-footnote { padding: 2px 4px; background-color: rgba(238, 238, 238, 0.7); color: rgb(85, 85, 85); border-radius: 4px; cursor: pointer; }
+sup.md-footnote a, sup.md-footnote a:hover { color: inherit; text-transform: inherit; text-decoration: inherit; }
+#write input[type="checkbox"] { cursor: pointer; width: inherit; height: inherit; }
+figure { overflow-x: auto; margin: 1.2em 0px; max-width: calc(100% + 16px); padding: 0px; }
+figure > table { margin: 0px !important; }
+tr { break-inside: avoid; break-after: auto; }
+thead { display: table-header-group; }
+table { border-collapse: collapse; border-spacing: 0px; width: 100%; overflow: auto; break-inside: auto; text-align: left; }
+table.md-table td { min-width: 32px; }
+.CodeMirror-gutters { border-right: 0px; background-color: inherit; }
+.CodeMirror-linenumber { user-select: none; }
+.CodeMirror { text-align: left; }
+.CodeMirror-placeholder { opacity: 0.3; }
+.CodeMirror pre { padding: 0px 4px; }
+.CodeMirror-lines { padding: 0px; }
+div.hr:focus { cursor: none; }
+#write pre { white-space: pre-wrap; }
+#write.fences-no-line-wrapping pre { white-space: pre; }
+#write pre.ty-contain-cm { white-space: normal; }
+.CodeMirror-gutters { margin-right: 4px; }
+.md-fences { font-size: 0.9rem; display: block; break-inside: avoid; text-align: left; overflow: visible; white-space: pre; background: inherit; position: relative !important; }
+.md-diagram-panel { width: 100%; margin-top: 10px; text-align: center; padding-top: 0px; padding-bottom: 8px; overflow-x: auto; }
+#write .md-fences.mock-cm { white-space: pre-wrap; }
+.md-fences.md-fences-with-lineno { padding-left: 0px; }
+#write.fences-no-line-wrapping .md-fences.mock-cm { white-space: pre; overflow-x: auto; }
+.md-fences.mock-cm.md-fences-with-lineno { padding-left: 8px; }
+.CodeMirror-line, twitterwidget { break-inside: avoid; }
+.footnotes { opacity: 0.8; font-size: 0.9rem; margin-top: 1em; margin-bottom: 1em; }
+.footnotes + .footnotes { margin-top: 0px; }
+.md-reset { margin: 0px; padding: 0px; border: 0px; outline: 0px; vertical-align: top; background: 0px 0px; text-decoration: none; text-shadow: none; float: none; position: static; width: auto; height: auto; white-space: nowrap; cursor: inherit; -webkit-tap-highlight-color: transparent; line-height: normal; font-weight: 400; text-align: left; box-sizing: content-box; direction: ltr; }
+li div { padding-top: 0px; }
+blockquote { margin: 1rem 0px; }
+li .mathjax-block, li p { margin: 0.5rem 0px; }
+li { margin: 0px; position: relative; }
+blockquote > :last-child { margin-bottom: 0px; }
+blockquote > :first-child, li > :first-child { margin-top: 0px; }
+.footnotes-area { color: rgb(136, 136, 136); margin-top: 0.714rem; padding-bottom: 0.143rem; white-space: normal; }
+#write .footnote-line { white-space: pre-wrap; }
+@media print {
+  body, html { border: 1px solid transparent; height: 99%; break-after: avoid; break-before: avoid; }
+  #write { margin-top: 0px; padding-top: 0px; border-color: transparent !important; }
+  .typora-export * { -webkit-print-color-adjust: exact; }
+  html.blink-to-pdf { font-size: 13px; }
+  .typora-export #write { padding-left: 32px; padding-right: 32px; padding-bottom: 0px; break-after: avoid; }
+  .typora-export #write::after { height: 0px; }
+  @page { margin: 20mm 0px; }
+}
+.footnote-line { margin-top: 0.714em; font-size: 0.7em; }
+a img, img a { cursor: pointer; }
+pre.md-meta-block { font-size: 0.8rem; min-height: 0.8rem; white-space: pre-wrap; background: rgb(204, 204, 204); display: block; overflow-x: hidden; }
+p > .md-image:only-child:not(.md-img-error) img, p > img:only-child { display: block; margin: auto; }
+p > .md-image:only-child { display: inline-block; width: 100%; }
+#write .MathJax_Display { margin: 0.8em 0px 0px; }
+.md-math-block { width: 100%; }
+.md-math-block:not(:empty)::after { display: none; }
+[contenteditable="true"]:active, [contenteditable="true"]:focus { outline: 0px; box-shadow: none; }
+.md-task-list-item { position: relative; list-style-type: none; }
+.task-list-item.md-task-list-item { padding-left: 0px; }
+.md-task-list-item > input { position: absolute; top: 0px; left: 0px; margin-left: -1.2em; margin-top: calc(1em - 10px); border: none; }
+.math { font-size: 1rem; }
+.md-toc { min-height: 3.58rem; position: relative; font-size: 0.9rem; border-radius: 10px; }
+.md-toc-content { position: relative; margin-left: 0px; }
+.md-toc-content::after, .md-toc::after { display: none; }
+.md-toc-item { display: block; color: rgb(65, 131, 196); }
+.md-toc-item a { text-decoration: none; }
+.md-toc-inner:hover { text-decoration: underline; }
+.md-toc-inner { display: inline-block; cursor: pointer; }
+.md-toc-h1 .md-toc-inner { margin-left: 0px; font-weight: 700; }
+.md-toc-h2 .md-toc-inner { margin-left: 2em; }
+.md-toc-h3 .md-toc-inner { margin-left: 4em; }
+.md-toc-h4 .md-toc-inner { margin-left: 6em; }
+.md-toc-h5 .md-toc-inner { margin-left: 8em; }
+.md-toc-h6 .md-toc-inner { margin-left: 10em; }
+@media screen and (max-width: 48em) {
+  .md-toc-h3 .md-toc-inner { margin-left: 3.5em; }
+  .md-toc-h4 .md-toc-inner { margin-left: 5em; }
+  .md-toc-h5 .md-toc-inner { margin-left: 6.5em; }
+  .md-toc-h6 .md-toc-inner { margin-left: 8em; }
+}
+a.md-toc-inner { font-size: inherit; font-style: inherit; font-weight: inherit; line-height: inherit; }
+.footnote-line a:not(.reversefootnote) { color: inherit; }
+.md-attr { display: none; }
+.md-fn-count::after { content: "."; }
+code, pre, samp, tt { font-family: var(--monospace); }
+kbd { margin: 0px 0.1em; padding: 0.1em 0.6em; font-size: 0.8em; color: rgb(36, 39, 41); background: rgb(255, 255, 255); border: 1px solid rgb(173, 179, 185); border-radius: 3px; box-shadow: rgba(12, 13, 14, 0.2) 0px 1px 0px, rgb(255, 255, 255) 0px 0px 0px 2px inset; white-space: nowrap; vertical-align: middle; }
+.md-comment { color: rgb(162, 127, 3); opacity: 0.8; font-family: var(--monospace); }
+code { text-align: left; vertical-align: initial; }
+a.md-print-anchor { white-space: pre !important; border-width: initial !important; border-style: none !important; border-color: initial !important; display: inline-block !important; position: absolute !important; width: 1px !important; right: 0px !important; outline: 0px !important; background: 0px 0px !important; text-decoration: initial !important; text-shadow: initial !important; }
+.md-inline-math .MathJax_SVG .noError { display: none !important; }
+.html-for-mac .inline-math-svg .MathJax_SVG { vertical-align: 0.2px; }
+.md-math-block .MathJax_SVG_Display { text-align: center; margin: 0px; position: relative; text-indent: 0px; max-width: none; max-height: none; min-height: 0px; min-width: 100%; width: auto; overflow-y: hidden; display: block !important; }
+.MathJax_SVG_Display, .md-inline-math .MathJax_SVG_Display { width: auto; margin: inherit; display: inline-block !important; }
+.MathJax_SVG .MJX-monospace { font-family: var(--monospace); }
+.MathJax_SVG .MJX-sans-serif { font-family: sans-serif; }
+.MathJax_SVG { display: inline; font-style: normal; font-weight: 400; line-height: normal; zoom: 90%; text-indent: 0px; text-align: left; text-transform: none; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; direction: ltr; max-width: none; max-height: none; min-width: 0px; min-height: 0px; border: 0px; padding: 0px; margin: 0px; }
+.MathJax_SVG * { transition: none; }
+.MathJax_SVG_Display svg { vertical-align: middle !important; margin-bottom: 0px !important; }
+.os-windows.monocolor-emoji .md-emoji { font-family: "Segoe UI Symbol", sans-serif; }
+.md-diagram-panel > svg { max-width: 100%; }
+[lang="mermaid"] svg, [lang="flow"] svg { max-width: 100%; }
+[lang="mermaid"] .node text { font-size: 1rem; }
+table tr th { border-bottom: 0px; }
+video { max-width: 100%; display: block; margin: 0px auto; }
+iframe { max-width: 100%; width: 100%; border: none; }
+.highlight td, .highlight tr { border: 0px; }
+
+
+.CodeMirror { height: auto; }
+.CodeMirror.cm-s-inner { background: inherit; }
+.CodeMirror-scroll { overflow-y: hidden; overflow-x: auto; z-index: 3; }
+.CodeMirror-gutter-filler, .CodeMirror-scrollbar-filler { background-color: rgb(255, 255, 255); }
+.CodeMirror-gutters { border-right: 1px solid rgb(221, 221, 221); background: inherit; white-space: nowrap; }
+.CodeMirror-linenumber { padding: 0px 3px 0px 5px; text-align: right; color: rgb(153, 153, 153); }
+.cm-s-inner .cm-keyword { color: rgb(119, 0, 136); }
+.cm-s-inner .cm-atom, .cm-s-inner.cm-atom { color: rgb(34, 17, 153); }
+.cm-s-inner .cm-number { color: rgb(17, 102, 68); }
+.cm-s-inner .cm-def { color: rgb(0, 0, 255); }
+.cm-s-inner .cm-variable { color: rgb(0, 0, 0); }
+.cm-s-inner .cm-variable-2 { color: rgb(0, 85, 170); }
+.cm-s-inner .cm-variable-3 { color: rgb(0, 136, 85); }
+.cm-s-inner .cm-string { color: rgb(170, 17, 17); }
+.cm-s-inner .cm-property { color: rgb(0, 0, 0); }
+.cm-s-inner .cm-operator { color: rgb(152, 26, 26); }
+.cm-s-inner .cm-comment, .cm-s-inner.cm-comment { color: rgb(170, 85, 0); }
+.cm-s-inner .cm-string-2 { color: rgb(255, 85, 0); }
+.cm-s-inner .cm-meta { color: rgb(85, 85, 85); }
+.cm-s-inner .cm-qualifier { color: rgb(85, 85, 85); }
+.cm-s-inner .cm-builtin { color: rgb(51, 0, 170); }
+.cm-s-inner .cm-bracket { color: rgb(153, 153, 119); }
+.cm-s-inner .cm-tag { color: rgb(17, 119, 0); }
+.cm-s-inner .cm-attribute { color: rgb(0, 0, 204); }
+.cm-s-inner .cm-header, .cm-s-inner.cm-header { color: rgb(0, 0, 255); }
+.cm-s-inner .cm-quote, .cm-s-inner.cm-quote { color: rgb(0, 153, 0); }
+.cm-s-inner .cm-hr, .cm-s-inner.cm-hr { color: rgb(153, 153, 153); }
+.cm-s-inner .cm-link, .cm-s-inner.cm-link { color: rgb(0, 0, 204); }
+.cm-negative { color: rgb(221, 68, 68); }
+.cm-positive { color: rgb(34, 153, 34); }
+.cm-header, .cm-strong { font-weight: 700; }
+.cm-del { text-decoration: line-through; }
+.cm-em { font-style: italic; }
+.cm-link { text-decoration: underline; }
+.cm-error { color: red; }
+.cm-invalidchar { color: red; }
+.cm-constant { color: rgb(38, 139, 210); }
+.cm-defined { color: rgb(181, 137, 0); }
+div.CodeMirror span.CodeMirror-matchingbracket { color: rgb(0, 255, 0); }
+div.CodeMirror span.CodeMirror-nonmatchingbracket { color: rgb(255, 34, 34); }
+.cm-s-inner .CodeMirror-activeline-background { background: inherit; }
+.CodeMirror { position: relative; overflow: hidden; }
+.CodeMirror-scroll { height: 100%; outline: 0px; position: relative; box-sizing: content-box; background: inherit; }
+.CodeMirror-sizer { position: relative; }
+.CodeMirror-gutter-filler, .CodeMirror-hscrollbar, .CodeMirror-scrollbar-filler, .CodeMirror-vscrollbar { position: absolute; z-index: 6; display: none; }
+.CodeMirror-vscrollbar { right: 0px; top: 0px; overflow: hidden; }
+.CodeMirror-hscrollbar { bottom: 0px; left: 0px; overflow: hidden; }
+.CodeMirror-scrollbar-filler { right: 0px; bottom: 0px; }
+.CodeMirror-gutter-filler { left: 0px; bottom: 0px; }
+.CodeMirror-gutters { position: absolute; left: 0px; top: 0px; padding-bottom: 30px; z-index: 3; }
+.CodeMirror-gutter { white-space: normal; height: 100%; box-sizing: content-box; padding-bottom: 30px; margin-bottom: -32px; display: inline-block; }
+.CodeMirror-gutter-wrapper { position: absolute; z-index: 4; background: 0px 0px !important; border: none !important; }
+.CodeMirror-gutter-background { position: absolute; top: 0px; bottom: 0px; z-index: 4; }
+.CodeMirror-gutter-elt { position: absolute; cursor: default; z-index: 4; }
+.CodeMirror-lines { cursor: text; }
+.CodeMirror pre { border-radius: 0px; border-width: 0px; background: 0px 0px; font-family: inherit; font-size: inherit; margin: 0px; white-space: pre; word-wrap: normal; color: inherit; z-index: 2; position: relative; overflow: visible; }
+.CodeMirror-wrap pre { word-wrap: break-word; white-space: pre-wrap; word-break: normal; }
+.CodeMirror-code pre { border-right: 30px solid transparent; width: fit-content; }
+.CodeMirror-wrap .CodeMirror-code pre { border-right: none; width: auto; }
+.CodeMirror-linebackground { position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px; z-index: 0; }
+.CodeMirror-linewidget { position: relative; z-index: 2; overflow: auto; }
+.CodeMirror-wrap .CodeMirror-scroll { overflow-x: hidden; }
+.CodeMirror-measure { position: absolute; width: 100%; height: 0px; overflow: hidden; visibility: hidden; }
+.CodeMirror-measure pre { position: static; }
+.CodeMirror div.CodeMirror-cursor { position: absolute; visibility: hidden; border-right: none; width: 0px; }
+.CodeMirror div.CodeMirror-cursor { visibility: hidden; }
+.CodeMirror-focused div.CodeMirror-cursor { visibility: inherit; }
+.cm-searching { background: rgba(255, 255, 0, 0.4); }
+@media print {
+  .CodeMirror div.CodeMirror-cursor { visibility: hidden; }
+}
+
+
+:root { --side-bar-bg-color: #fafafa; --control-text-color: #777; }
+html { font-size: 16px; }
+body { font-family: "Open Sans", "Clear Sans", "Helvetica Neue", Helvetica, Arial, sans-serif; color: rgb(51, 51, 51); line-height: 1.6; }
+#write { max-width: 860px; margin: 0px auto; padding: 30px 30px 100px; }
+#write > ul:first-child, #write > ol:first-child { margin-top: 30px; }
+a { color: rgb(65, 131, 196); }
+h1, h2, h3, h4, h5, h6 { position: relative; margin-top: 1rem; margin-bottom: 1rem; font-weight: bold; line-height: 1.4; cursor: text; }
+h1:hover a.anchor, h2:hover a.anchor, h3:hover a.anchor, h4:hover a.anchor, h5:hover a.anchor, h6:hover a.anchor { text-decoration: none; }
+h1 tt, h1 code { font-size: inherit; }
+h2 tt, h2 code { font-size: inherit; }
+h3 tt, h3 code { font-size: inherit; }
+h4 tt, h4 code { font-size: inherit; }
+h5 tt, h5 code { font-size: inherit; }
+h6 tt, h6 code { font-size: inherit; }
+h1 { padding-bottom: 0.3em; font-size: 2.25em; line-height: 1.2; border-bottom: 1px solid rgb(238, 238, 238); }
+h2 { padding-bottom: 0.3em; font-size: 1.75em; line-height: 1.225; border-bottom: 1px solid rgb(238, 238, 238); }
+h3 { font-size: 1.5em; line-height: 1.43; }
+h4 { font-size: 1.25em; }
+h5 { font-size: 1em; }
+h6 { font-size: 1em; color: rgb(119, 119, 119); }
+p, blockquote, ul, ol, dl, table { margin: 0.8em 0px; }
+li > ol, li > ul { margin: 0px; }
+hr { height: 2px; padding: 0px; margin: 16px 0px; background-color: rgb(231, 231, 231); border: 0px none; overflow: hidden; box-sizing: content-box; }
+li p.first { display: inline-block; }
+ul, ol { padding-left: 30px; }
+ul:first-child, ol:first-child { margin-top: 0px; }
+ul:last-child, ol:last-child { margin-bottom: 0px; }
+blockquote { border-left: 4px solid rgb(223, 226, 229); padding: 0px 15px; color: rgb(119, 119, 119); }
+blockquote blockquote { padding-right: 0px; }
+table { padding: 0px; word-break: initial; }
+table tr { border-top: 1px solid rgb(223, 226, 229); margin: 0px; padding: 0px; }
+table tr:nth-child(2n), thead { background-color: rgb(248, 248, 248); }
+table tr th { font-weight: bold; border-width: 1px 1px 0px; border-top-style: solid; border-right-style: solid; border-left-style: solid; border-top-color: rgb(223, 226, 229); border-right-color: rgb(223, 226, 229); border-left-color: rgb(223, 226, 229); border-image: initial; border-bottom-style: initial; border-bottom-color: initial; text-align: left; margin: 0px; padding: 6px 13px; }
+table tr td { border: 1px solid rgb(223, 226, 229); text-align: left; margin: 0px; padding: 6px 13px; }
+table tr th:first-child, table tr td:first-child { margin-top: 0px; }
+table tr th:last-child, table tr td:last-child { margin-bottom: 0px; }
+.CodeMirror-lines { padding-left: 4px; }
+.code-tooltip { box-shadow: rgba(0, 28, 36, 0.3) 0px 1px 1px 0px; border-top: 1px solid rgb(238, 242, 242); }
+.md-fences, code, tt { border: 1px solid rgb(231, 234, 237); background-color: rgb(248, 248, 248); border-radius: 3px; padding: 2px 4px 0px; font-size: 0.9em; }
+code { background-color: rgb(243, 244, 244); padding: 0px 2px; }
+.md-fences { margin-bottom: 15px; margin-top: 15px; padding-top: 8px; padding-bottom: 6px; }
+.md-task-list-item > input { margin-left: -1.3em; }
+@media print {
+  html { font-size: 13px; }
+  table, pre { break-inside: avoid; }
+  pre { word-wrap: break-word; }
+}
+.md-fences { background-color: rgb(248, 248, 248); }
+#write pre.md-meta-block { padding: 1rem; font-size: 85%; line-height: 1.45; background-color: rgb(247, 247, 247); border: 0px; border-radius: 3px; color: rgb(119, 119, 119); margin-top: 0px !important; }
+.mathjax-block > .code-tooltip { bottom: 0.375rem; }
+.md-mathjax-midline { background: rgb(250, 250, 250); }
+#write > h3.md-focus::before { left: -1.5625rem; top: 0.375rem; }
+#write > h4.md-focus::before { left: -1.5625rem; top: 0.285714rem; }
+#write > h5.md-focus::before { left: -1.5625rem; top: 0.285714rem; }
+#write > h6.md-focus::before { left: -1.5625rem; top: 0.285714rem; }
+.md-image > .md-meta { border-radius: 3px; padding: 2px 0px 0px 4px; font-size: 0.9em; color: inherit; }
+.md-tag { color: rgb(167, 167, 167); opacity: 1; }
+.md-toc { margin-top: 20px; padding-bottom: 20px; }
+.sidebar-tabs { border-bottom: none; }
+#typora-quick-open { border: 1px solid rgb(221, 221, 221); background-color: rgb(248, 248, 248); }
+#typora-quick-open-item { background-color: rgb(250, 250, 250); border-color: rgb(254, 254, 254) rgb(229, 229, 229) rgb(229, 229, 229) rgb(238, 238, 238); border-style: solid; border-width: 1px; }
+.on-focus-mode blockquote { border-left-color: rgba(85, 85, 85, 0.12); }
+header, .context-menu, .megamenu-content, footer { font-family: "Segoe UI", Arial, sans-serif; }
+.file-node-content:hover .file-node-icon, .file-node-content:hover .file-node-open-state { visibility: visible; }
+.mac-seamless-mode #typora-sidebar { background-color: var(--side-bar-bg-color); }
+.md-lang { color: rgb(180, 101, 77); }
+.html-for-mac .context-menu { --item-hover-bg-color: #E6F0FE; }
+#md-notification .btn { border: 0px; }
+.dropdown-menu .divider { border-color: rgb(229, 229, 229); }
+
+
+
+
+
+ .typora-export li, .typora-export p, .typora-export,  .footnote-line {white-space: normal;} 
+</style>
+</head>
+<body class='typora-export os-windows' >
+<div  id='write'  class = 'is-node'><h2><a name='header-n0' class='md-header-anchor '></a>00. 目录</h2><div class='md-toc' mdtype='toc'><p class="md-toc-content"><span class="md-toc-item md-toc-h2" data-ref="n0"><a class="md-toc-inner" href="#header-n0">00. 目录</a></span><span class="md-toc-item md-toc-h2" data-ref="n3"><a class="md-toc-inner" href="#header-n3">01. 学习目标</a></span><span class="md-toc-item md-toc-h2" data-ref="n18"><a class="md-toc-inner" href="#header-n18">02. 编辑器gedit介绍</a></span><span class="md-toc-item md-toc-h2" data-ref="n26"><a class="md-toc-inner" href="#header-n26">03. 什么是vi(vim)</a></span><span class="md-toc-item md-toc-h2" data-ref="n34"><a class="md-toc-inner" href="#header-n34">04. vim工作模式</a></span><span class="md-toc-item md-toc-h3" data-ref="n37"><a class="md-toc-inner" href="#header-n37">4.1 命令模式</a></span><span class="md-toc-item md-toc-h3" data-ref="n42"><a class="md-toc-inner" href="#header-n42">4.2 编辑模式</a></span><span class="md-toc-item md-toc-h3" data-ref="n47"><a class="md-toc-inner" href="#header-n47">4.3 末行模式</a></span><span class="md-toc-item md-toc-h2" data-ref="n51"><a class="md-toc-inner" href="#header-n51">05. vim教程</a></span><span class="md-toc-item md-toc-h2" data-ref="n56"><a class="md-toc-inner" href="#header-n56">06. vim基本操作</a></span><span class="md-toc-item md-toc-h2" data-ref="n70"><a class="md-toc-inner" href="#header-n70">07. vim实用操作</a></span><span class="md-toc-item md-toc-h3" data-ref="n71"><a class="md-toc-inner" href="#header-n71">7.1  命令模式下的操作</a></span><span class="md-toc-item md-toc-h3" data-ref="n252"><a class="md-toc-inner" href="#header-n252">7.2 末行模式下的操作</a></span><span class="md-toc-item md-toc-h2" data-ref="n372"><a class="md-toc-inner" href="#header-n372">08. GCC编译器简介</a></span><span class="md-toc-item md-toc-h2" data-ref="n391"><a class="md-toc-inner" href="#header-n391">09. GCC工作流程和常用选项</a></span><span class="md-toc-item md-toc-h2" data-ref="n462"><a class="md-toc-inner" href="#header-n462">10. 静态连接和动态连接</a></span><span class="md-toc-item md-toc-h2" data-ref="n505"><a class="md-toc-inner" href="#header-n505">11. 静态库和动态库简介</a></span><span class="md-toc-item md-toc-h2" data-ref="n510"><a class="md-toc-inner" href="#header-n510">12. 静态库制作和使用</a></span><span class="md-toc-item md-toc-h2" data-ref="n553"><a class="md-toc-inner" href="#header-n553">13. 动态库制作和使用</a></span><span class="md-toc-item md-toc-h2" data-ref="n627"><a class="md-toc-inner" href="#header-n627">14. GDB调试器</a></span><span class="md-toc-item md-toc-h3" data-ref="n628"><a class="md-toc-inner" href="#header-n628">14.1 GDB简介</a></span><span class="md-toc-item md-toc-h3" data-ref="n643"><a class="md-toc-inner" href="#header-n643">14.2 生成调试信息</a></span><span class="md-toc-item md-toc-h3" data-ref="n650"><a class="md-toc-inner" href="#header-n650">14.3 启动GDB</a></span><span class="md-toc-item md-toc-h3" data-ref="n667"><a class="md-toc-inner" href="#header-n667">14.3 显示源代码 </a></span><span class="md-toc-item md-toc-h3" data-ref="n677"><a class="md-toc-inner" href="#header-n677">14.4 断点操作</a></span><span class="md-toc-item md-toc-h3" data-ref="n700"><a class="md-toc-inner" href="#header-n700">14.5 条件断点</a></span><span class="md-toc-item md-toc-h3" data-ref="n706"><a class="md-toc-inner" href="#header-n706">14.6 维护断点 </a></span><span class="md-toc-item md-toc-h3" data-ref="n718"><a class="md-toc-inner" href="#header-n718">14.7  调试代码</a></span><span class="md-toc-item md-toc-h3" data-ref="n735"><a class="md-toc-inner" href="#header-n735">14.8 数据查看</a></span><span class="md-toc-item md-toc-h3" data-ref="n740"><a class="md-toc-inner" href="#header-n740">14.9 自动显示</a></span><span class="md-toc-item md-toc-h3" data-ref="n758"><a class="md-toc-inner" href="#header-n758">14.10 查看修改变量的值 </a></span></p></div><h2><a name='header-n3' class='md-header-anchor '></a>01. 学习目标</h2><ul><li>熟练使用压缩工具完成文件或目录的压缩解压缩</li><li>熟练掌握Ubuntu下的软件安装和卸载</li><li>掌握vim命令模式下相关命令的使用</li><li>掌握从命令模式切换到编辑模式的相关命令</li><li>掌握vim末行模式下相关命令的使用</li><li>能够说出gcc的工作流程和掌握常见参数的使用</li></ul><h2><a name='header-n18' class='md-header-anchor '></a>02. 编辑器gedit介绍</h2><p>gedit是一个<a href='https://baike.baidu.com/item/GNOME'>GNOME</a><a href='https://baike.baidu.com/item/%E6%A1%8C%E9%9D%A2%E7%8E%AF%E5%A2%83'>桌面环境</a>下兼容UTF-8的<a href='https://baike.baidu.com/item/%E6%96%87%E6%9C%AC%E7%BC%96%E8%BE%91%E5%99%A8'>文本编辑器</a>。它使用<a href='https://baike.baidu.com/item/GTK%2B'>GTK+</a>编写而成，因此它十分的简单易用，有良好的语法高亮，对中文支持很好，支持包括<a href='https://baike.baidu.com/item/gb2312'>gb2312</a>、<a href='https://baike.baidu.com/item/gbk'>gbk</a>在内的多种<a href='https://baike.baidu.com/item/%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81'>字符编码</a>。gedit是一个<a href='https://baike.baidu.com/item/%E8%87%AA%E7%94%B1%E8%BD%AF%E4%BB%B6'>自由软件</a>。</p><p>这是 Linux 下的一个纯文本编辑器,但你也可以把它用来当成是一个集成开发环境 (IDE), 它会根据不同的语言高亮显现关键字和标识符。 </p><p>gedit是一个Linux环境下的文本编辑器，类似windows下的写字板程序，在不需要特别复杂的编程环境下，作为基本的文本编辑器比较合适。 </p><blockquote><p>deng@itcast:~$ gedit txt &amp;</p></blockquote><p>打开gedit图形界面如下：</p><p><img src='assets/1527505979128.png' alt='1527505979128' referrerPolicy='no-referrer' /></p><h2><a name='header-n26' class='md-header-anchor '></a>03. 什么是vi(vim)</h2><p>vi (Visual interface)编辑器是 Linux 系统中最常用的文本编辑器，vi 在Linux界有编辑器之神的美誉，几乎所有的 Linux 发行版中都包含 vi 程序。</p><p>vi 工作在字符模式下，不需要图形界面，非常适合远程及嵌入式工作，是效率很高的文本编辑器，尽管在 Linux 上也有很多图形界面的编辑器可用，但vi的功能是那些图形编辑器所无法比拟的。</p><p>vim 是 vi 的升级版，它不仅兼容 vi 的所有指令，而且还有一些新的特性，例如 vim 可以撤消无限次、支持关键词自动完成、可以用不同的颜色来高亮你的代码。vim 普遍被推崇为类 vi 编辑器中最好的一个。</p><p>&nbsp;</p><blockquote><p>vim键盘</p></blockquote><p><img src='assets/vim键盘.jpg' alt='vim键盘' referrerPolicy='no-referrer' /></p><h2><a name='header-n34' class='md-header-anchor '></a>04. vim工作模式</h2><p>vi有三种基本工作模式: <strong>命令模式、文本输入模式(编辑模式)、末行模式</strong>。 </p><p> <img src='assets/clip_image002.jpg' alt='clip_image002' referrerPolicy='no-referrer' /></p><h3><a name='header-n37' class='md-header-anchor '></a>4.1 命令模式</h3><p>任何时候,不管用户处于何种模式,只要按一下ESC键,即可使vi进入命令模式。我们在shell环境(提示符为$)下输入启动vim命令，进入编辑器时，也是处于该模式下。</p><p> </p><p>在命令模式下，用户可以输入各种合法的vi命令，用于管理自己的文档。此时从键盘上输入的任何字符都被当做编辑命令来解释，若输入的字符是合法的vi命令，则vi在接受用户命令之后完成相应的动作。但需注意的是，所输入的命令并不在屏幕上显示出来。若输入的字符不是vi的合法命令，vi会响铃报警。</p><p>&nbsp;</p><h3><a name='header-n42' class='md-header-anchor '></a>4.2 编辑模式</h3><p>在命令模式下输入插入命令i（I）、附加命令a（A） 、打开命令o（O）、替换命s（S）都可以进入文本输入模式，此时vi窗口的最后一行会显示“插入”。 </p><p><img src='assets/1527506715865.png' alt='1527506715865' referrerPolicy='no-referrer' /></p><p>在该模式下,用户输入的任何字符都被vi当做文件内容保存起来，并将其显示在屏幕上。在文本输入过程中，若想回到命令模式下，按键<strong>ESC</strong>即可。 </p><p>&nbsp;</p><h3><a name='header-n47' class='md-header-anchor '></a>4.3 末行模式</h3><p>末行模式下，用户可以对文件进行一些附加处理。尽管命令模式下的命令可以完成很多功能，但要执行一些如字符串查找、替换、显示行号等操作还是必须要进入末行模式的。</p><p>在命令模式下，输入冒号即可进入末行模式。此时vi窗口的状态行会显示出冒号，等待用户输入命令。用户输入完成后，按回车执行，之后vi编辑器又自动返回到命令模式下。</p><p>&nbsp;</p><h2><a name='header-n51' class='md-header-anchor '></a>05. vim教程</h2><blockquote><p>deng@itcast:~/test$ vimtutor </p></blockquote><p><img src='assets/1527507035917.png' alt='1527507035917' referrerPolicy='no-referrer' /></p><p>&nbsp;</p><h2><a name='header-n56' class='md-header-anchor '></a>06. vim基本操作</h2><p><strong>6.1 打开文件</strong></p><p><strong>vim filename</strong>：打开或新建文件，并将光标置于第一行行首，如果文件不存在，则会新建文件。 </p><p>打开不存在文件：</p><p><img src='assets/1527561037701.png' alt='1527561037701' referrerPolicy='no-referrer' /></p><p><strong>6.2 编辑文件</strong></p><p>如果通过vi打开一个已经存在的文件，首先进入命令模式，此时输入的任何字符都被视为命令，不能输入内容。 </p><p>在命令模式输入i  </p><p>&nbsp;</p><p><strong>6.3 保存文件</strong></p><p>一定要先退出插入模式(按Esc进入命令模式)，然后(小写状态下)，shift + zz （按住 “shift” + 按两下“z”键），或者（大写状态下：ZZ） 即可保存退出当前文件。 </p><p>第一步：进入命令模式（ESC）</p><p>第二步：shifit + z z</p><p>&nbsp;</p><h2><a name='header-n70' class='md-header-anchor '></a>07. vim实用操作</h2><h3><a name='header-n71' class='md-header-anchor '></a>7.1  命令模式下的操作</h3><p><strong>1）切换到编辑模式</strong></p><figure><table><thead><tr><th style='text-align:left;' >按键</th><th style='text-align:left;' >功能</th></tr></thead><tbody><tr><td style='text-align:left;' >i</td><td style='text-align:left;' >光标位置当前处插入文字</td></tr><tr><td style='text-align:left;' >I</td><td style='text-align:left;' >光标所在行首插入文字</td></tr><tr><td style='text-align:left;' >o(字母)</td><td style='text-align:left;' >光标下一行插入文字（新行）</td></tr><tr><td style='text-align:left;' >O(字母)</td><td style='text-align:left;' >光标上一行插入文字（新行）</td></tr><tr><td style='text-align:left;' >a</td><td style='text-align:left;' >光标位置右边插入文字</td></tr><tr><td style='text-align:left;' >A</td><td style='text-align:left;' >光标所在行尾插入文字</td></tr><tr><td style='text-align:left;' >s</td><td style='text-align:left;' >删除光标后边的字符，从光标当前位置插入</td></tr><tr><td style='text-align:left;' >S</td><td style='text-align:left;' >删除光标所在当前行，从行首插入</td></tr></tbody></table></figure><p>&nbsp;</p><p><strong>2)  光标移动</strong></p><figure><table><thead><tr><th><strong>按键</strong></th><th><strong>功能</strong></th></tr></thead><tbody><tr><td>Ctrl + f</td><td>向前滚动一个屏幕</td></tr><tr><td>Ctrl + b</td><td>向后滚动一个屏幕</td></tr><tr><td>gg</td><td>到文件第一行行首</td></tr><tr><td>G(大写)</td><td>到文件最后一行行首，G必须为大写</td></tr><tr><td>mG或mgg</td><td>到指定行，m为目标行数</td></tr><tr><td>0(数字)</td><td>光标移到到行首（第一个字符位置）</td></tr><tr><td>$</td><td>光标移到到行尾</td></tr><tr><td>l(小写L)</td><td>向右移动光标</td></tr><tr><td>h</td><td>向左移动光标</td></tr><tr><td>k</td><td>向上移动光标</td></tr><tr><td>j</td><td>向下移动光标</td></tr><tr><td>^</td><td>光标移到到行首（第一个有效字符位置）</td></tr></tbody></table></figure><p>&nbsp;</p><p><strong>3）复制粘贴</strong></p><figure><table><thead><tr><th><strong>按键</strong></th><th><strong>功能</strong></th></tr></thead><tbody><tr><td>[n]yy</td><td>复制从当前行开始的 n 行</td></tr><tr><td>p</td><td>把粘贴板上的内容插入到当前行</td></tr></tbody></table></figure><p>&nbsp;</p><p><strong>4）删除</strong></p><figure><table><thead><tr><th><strong>按键</strong></th><th><strong>功能</strong></th></tr></thead><tbody><tr><td>[n]x</td><td>删除光标后 n 个字符</td></tr><tr><td>[n]X</td><td>删除光标前 n 个字符</td></tr><tr><td>D</td><td>删除光标所在开始到此行尾的字符</td></tr><tr><td>[n]dd</td><td>删除从当前行开始的 n 行（准确来讲，是剪切，剪切不粘贴即为删除）</td></tr><tr><td>dG</td><td>删除光标所在开始到文件尾的所有字符</td></tr><tr><td>dw</td><td>删除光标开始位置的字,包含光标所在字符</td></tr><tr><td>d0(0为数字)</td><td>删除光标前本行所有内容,不包含光标所在字符</td></tr><tr><td>dgg</td><td>删除光标所在开始到文件首行第一个字符开始的所有字符</td></tr></tbody></table></figure><p>&nbsp;</p><p><strong>5）撤销恢复</strong></p><figure><table><thead><tr><th><strong>按键</strong></th><th><strong>功能</strong></th></tr></thead><tbody><tr><td><strong>.</strong>(点)</td><td>执行上一次操作</td></tr><tr><td>u</td><td>撤销前一个命令</td></tr><tr><td>ctrl+r</td><td>反撤销</td></tr><tr><td>100 + .</td><td>执行上一次操作100次</td></tr></tbody></table></figure><p>&nbsp;</p><p><strong>6）保存退出</strong></p><figure><table><thead><tr><th><strong>按键</strong></th><th><strong>功能</strong></th></tr></thead><tbody><tr><td>ZZ(shift+z+z)</td><td>保存退出</td></tr></tbody></table></figure><p>&nbsp;</p><p><strong>7）查找</strong></p><figure><table><thead><tr><th><strong>按键</strong></th><th><strong>功能</strong></th></tr></thead><tbody><tr><td>/字符串</td><td>从当前光标位置向下查找（n，N查找内容切换）</td></tr><tr><td>?字符串</td><td>从当前光标位置向上查找（n，N查找内容切换）</td></tr></tbody></table></figure><p>&nbsp;</p><p><strong>8）替换</strong></p><figure><table><thead><tr><th><strong>按键</strong></th><th><strong>功能</strong></th></tr></thead><tbody><tr><td>r</td><td>替换当前字符</td></tr><tr><td>R</td><td>替换当前行光标后的字符(ESC退出替换模式)</td></tr></tbody></table></figure><p>&nbsp;</p><p><strong>9）可视模式</strong></p><figure><table><thead><tr><th><strong>按键</strong></th><th><strong>功能</strong></th></tr></thead><tbody><tr><td>v</td><td>按字符移动，选中文本，可配合h、j、k、l选择内容，使用d删除，使用y复制</td></tr><tr><td>Shift + v</td><td>行选（以行为单位）选中文本，可配合h、j、k、l选择内容，使用d删除，使用y复制</td></tr><tr><td>Ctrl + v</td><td>列选 选中文本，可配合h、j、k、l选择内容，使用d删除，使用y复制</td></tr></tbody></table></figure><p>&nbsp;</p><h3><a name='header-n252' class='md-header-anchor '></a>7.2 末行模式下的操作</h3><p><strong>1）保存退出</strong></p><figure><table><thead><tr><th><strong>按键</strong></th><th><strong>功能</strong></th></tr></thead><tbody><tr><td>:wq</td><td>保存退出</td></tr><tr><td>:x(小写)</td><td>保存退出</td></tr><tr><td>:w filename</td><td>保存到指定文件</td></tr><tr><td>:q</td><td>退出，如果文件修改但没有保存，会提示无法退出</td></tr><tr><td>:q!</td><td>退出，不保存</td></tr><tr><td>&nbsp;</td><td>&nbsp;</td></tr></tbody></table></figure><p>all 表示所有</p><p><strong>2）替换</strong></p><figure><table><thead><tr><th><strong>按键</strong></th><th><strong>功能</strong></th></tr></thead><tbody><tr><td>:s/abc/123/</td><td>光标所在行的第一个abc替换为123</td></tr><tr><td>:s/abc/123/g</td><td>光标所在行的所有abc替换为123</td></tr><tr><td>:1,10s/abc/123/g</td><td>将第一行至第10行之间的abc全部替换成123</td></tr><tr><td>:%s/abc/123/g</td><td>当前文件的所有abc替换为123</td></tr><tr><td>:%s/abc/123/gc</td><td>同上，但是每次替换需要用户确认</td></tr><tr><td>:1,$s/abc/123/g</td><td>当前文件的所有abc替换为123</td></tr></tbody></table></figure><p>&nbsp;</p><p><strong>3）分屏</strong></p><figure><table><thead><tr><th><strong>按键</strong></th><th><strong>功能</strong></th></tr></thead><tbody><tr><td>:sp</td><td>当前文件水平分屏</td></tr><tr><td>:vsp</td><td>当前文件垂直分屏</td></tr><tr><td>: sp 文件名</td><td>当前文件和另一个文件水平分屏</td></tr><tr><td>: vsp 文件名</td><td>当前文件和另一个文件垂直分屏</td></tr><tr><td>ctrl-w-w</td><td>在多个窗口切换光标</td></tr><tr><td>:wall/:wqall/:qall</td><td>保存/保存退出/退出所有分屏窗口</td></tr><tr><td>vim -O a.c b.c</td><td>垂直分屏</td></tr><tr><td>vim -o a.c b.c</td><td>水平分屏</td></tr></tbody></table></figure><p>&nbsp;</p><p><strong>4) 其它用法(扩展)</strong></p><figure><table><thead><tr><th>按键</th><th>功能</th></tr></thead><tbody><tr><td>:!man 3 printf</td><td>在vim中执行命令 （q退出）</td></tr><tr><td>:r  !ls -l</td><td>将ls -l执行的结果写入当前文件中</td></tr><tr><td>:r /etc/passwd</td><td>将/etc/passwd文件中的内容写入到当前文件中</td></tr><tr><td>:w /tmp/txt</td><td>将当前文件内容写入到/tmp/txt文件中</td></tr><tr><td>:w! /tmp/txt</td><td>强制将当前文件内容写入到/tmp/txt文件中</td></tr><tr><td>:1,10s/^/\/\//g</td><td>将第1行到10行行首添加//   (^表示行首)   /\/\转移字符</td></tr><tr><td>:1,10s#^#//#g</td><td>将第1行到10行行首添加// (#可以临时代替/ 分隔)</td></tr><tr><td>:%s/;/\r{\r\treturn0;\r}\r/g</td><td>将;替换成{    return 0;   }</td></tr><tr><td>:1,10s#//##g</td><td>将第1行到10行行首去掉// (#可以临时代替/ 分隔)</td></tr></tbody></table></figure><p>&nbsp;</p><p><strong>5) 配置文件</strong></p><p>局部配置文件（推荐）</p><blockquote><p>deng@itcast:~/share/2nd$ vim ~/.vimrc </p></blockquote><p>全局配置文件:</p><blockquote><p>deng@itcast:~/share/2nd$ sudo vim /etc/vim/vimrc</p></blockquote><p>&nbsp;</p><h2><a name='header-n372' class='md-header-anchor '></a>08. GCC编译器简介</h2><p>编辑器(如vi、记事本)是指我用它来写程序的（编辑代码），而我们写的代码语句，电脑是不懂的，我们需要把它转成电脑能懂的语句，编译器就是这样的转化工具。就是说，我们用编辑器编写程序，由编译器编译后才可以运行！</p><p> 编译器是将易于编写、阅读和维护的高级计算机语言翻译为计算机能解读、运行的低级机器语言的程序。</p><p> gcc（GNU Compiler Collection，GNU 编译器套件），是由 GNU 开发的编程语言编译器。gcc原本作为GNU操作系统的官方编译器，现已被大多数类Unix操作系统（如Linux、BSD、Mac OS X等）采纳为标准的编译器，gcc同样适用于微软的Windows。</p><p> gcc最初用于编译C语言，随着项目的发展gcc已经成为了能够编译C、C++、Java、Ada、fortran、Object C、Object C++、Go语言的编译器大家族。</p><blockquote><p>编译命令格式： </p><p>gcc [options] file...</p><p>g++ [options] file...</p><ul><li>命令、选项和源文件之间使用空格分隔</li><li>一行命令中可以有零个、一个或多个选项</li><li>文件名可以包含文件的绝对路径，也可以使用相对路径</li><li>如果命令中不包含输出可执行文件的文件名，可执行文件的文件名会自动生成一个默认名，Linux平台为a.out，Windows平台为a.exe</li></ul></blockquote><p>&nbsp;</p><h2><a name='header-n391' class='md-header-anchor '></a>09. GCC工作流程和常用选项</h2><p>gcc编译器从拿到一个c源文件到生成一个可执行程序，中间一共经历了四个步骤：</p><p><img src='assets/clip_image002.png' alt='img' referrerPolicy='no-referrer' /> </p><p>四个步骤并不是gcc独立完成的，而是在内部调用了其他工具，从而完成了整个工作流程：</p><p><img src='assets/clip_image002-1527509458588.png' alt='img' referrerPolicy='no-referrer' /> </p><p>gcc工作的流程</p><blockquote><p>deng@itcast:~/share/3rd/1gcc$ ls
+1hello.c</p><p>第一步: 进行预处理</p><p>deng@itcast:~/share/3rd/1gcc$ gcc -E 1hello.c -o 1hello.i </p><p>第二步: 生成汇编文件</p><p>deng@itcast:~/share/3rd/1gcc$ gcc -S 1hello.i -o 1hello.s </p><p>第三步: 生成目标代码</p><p>deng@itcast:~/share/3rd/1gcc$ gcc -c 1hello.s -o 1hello.o </p><p>第四步: 生成可以执行文件</p><p>deng@itcast:~/share/3rd/1gcc$ gcc 1hello.o -o 1hello 
+第五步: 执行
+deng@itcast:~/share/3rd/1gcc​$ ./1hello 
+hello itcast</p></blockquote><p>&nbsp;</p><p>直接将源文件生成一个可以执行文件</p><blockquote><p>deng@itcast:~/share/3rd/1gcc$ gcc 1hello.c -o 1hello 
+deng@itcast:~/share/3rd/1gcc​$ ./1hello 
+hello itcast</p></blockquote><p>如果不指定输出文件名字, gcc编译器会生成一个默认的可以执行a.out</p><blockquote><p>deng@itcast:~/share/3rd/1gcc$ gcc 1hello.c<br/>deng@itcast:~/share/3rd/1gcc​$ ls
+1hello  1hello.c  1hello.i  1hello.o  1hello.s  a.out
+deng@itcast:~/share/3rd/1gcc​$ ./a.out<br/>hello itcast</p></blockquote><p>&nbsp;</p><p>gcc常用选项</p><figure><table><thead><tr><th><strong>选项</strong></th><th><strong>作用</strong></th></tr></thead><tbody><tr><td>-o file</td><td>指定生成的输出文件名为file</td></tr><tr><td>-E</td><td>只进行预处理</td></tr><tr><td>-S(大写)</td><td>只进行预处理和编译</td></tr><tr><td>-c(小写)</td><td>只进行预处理、编译和汇编</td></tr><tr><td>-v / --version</td><td>查看gcc版本号</td></tr><tr><td>-g</td><td>包含调试信息</td></tr><tr><td>-On       n=0~3</td><td>编译优化，n越大优化得越多</td></tr><tr><td>-Wall</td><td>提示更多警告信息</td></tr><tr><td>-D</td><td>编译时定义宏</td></tr></tbody></table></figure><p>显示所有的警告信息</p><blockquote><p>gcc -Wall test.c </p></blockquote><p>将警告信息当做错误处理</p><blockquote><p>gcc -Wall -Werror test.c </p></blockquote><p>&nbsp;</p><p>测试程序(-D选项)：</p><pre spellcheck="false" class="md-fences md-end-block md-fences-with-lineno ty-contain-cm modeLoaded" lang="c"><div class="CodeMirror cm-s-inner CodeMirror-wrap" lang="c"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 0px; left: 45px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 37px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><span><span>​</span>x</span></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: -37px; width: 37px;"></div><div class="CodeMirror-gutter-wrapper CodeMirror-activeline-gutter" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt CodeMirror-linenumber-show" style="left: 0px; width: 28px;">1</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-meta">#include &lt;stdio.h&gt;</span></span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 28px;">2</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 28px;">3</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 28px;">4</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable-3">int</span> <span class="cm-def">main</span>(<span class="cm-variable-3">void</span>)</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 28px;">5</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">{</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 28px;">6</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 28px;">7</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;<span class="cm-variable">printf</span>(<span class="cm-string">"SIZE: %d\n"</span>, <span class="cm-variable">SIZE</span>);</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 28px;">8</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 28px;">9</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;<span class="cm-keyword">return</span> <span class="cm-number">0</span>;</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt CodeMirror-linenumber-show" style="left: 0px; width: 28px;">10</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">}</span></pre></div></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 224px;"></div><div class="CodeMirror-gutters" style="height: 224px;"><div class="CodeMirror-gutter CodeMirror-linenumbers" style="width: 36px;"></div></div></div></div></pre><p>&nbsp;</p><blockquote><p>deng@itcast:~/test$ gcc 2test.c  -DSIZE=10</p><p>deng@itcast:~/test$ ./a.out </p><p>SIZE: 10</p></blockquote><p>&nbsp;</p><h2><a name='header-n462' class='md-header-anchor '></a>10. 静态连接和动态连接</h2><p>链接分为两种：<strong>静态链接</strong>、<strong>动态链接</strong>。</p><p><strong>1）静态链接</strong></p><p>静态链接：由链接器在链接时将库的内容加入到可执行程序中。</p><p>优点：</p><ul><li>对运行环境的依赖性较小，具有较好的兼容性</li></ul><p> 缺点：</p><ul><li>生成的程序比较大，需要更多的系统资源，在装入内存时会消耗更多的时间</li><li>库函数有了更新，必须重新编译应用程序</li></ul><p><strong>2）动态链接</strong></p><p>动态链接：连接器在链接时仅仅建立与所需库函数的之间的链接关系，在程序运行时才将所需资源调入可执行程序。 </p><p>优点：</p><ul><li>在需要的时候才会调入对应的资源函数</li><li>简化程序的升级；有着较小的程序体积</li><li>实现进程之间的资源共享（避免重复拷贝） </li></ul><p>缺点：</p><ul><li>依赖动态库，不能独立运行</li><li>动态库依赖版本问题严重</li></ul><p><strong>3）静态、动态编译对比</strong></p><p>前面我们编写的应用程序大量用到了标准库函数，系统默认采用动态链接的方式进行编译程序，若想采用静态编译，加入-static参数。</p><p> 以下是分别采用动态编译、静态编译时文件对比：</p><p>测试程序(test.c)如下：</p><pre spellcheck="false" class="md-fences md-end-block md-fences-with-lineno ty-contain-cm modeLoaded" lang="c"><div class="CodeMirror cm-s-inner CodeMirror-wrap" lang="c"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 0px; left: 36px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 28px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre><div class="CodeMirror-linenumber CodeMirror-gutter-elt"><div>8</div></div></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: -28px; width: 28px;"></div><div class="CodeMirror-gutter-wrapper CodeMirror-activeline-gutter" style="left: -28px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt CodeMirror-linenumber-show" style="left: 0px; width: 19px;">1</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-meta">#include &lt;stdio.h&gt;</span></span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -28px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 19px;">2</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -28px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 19px;">3</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable-3">int</span> <span class="cm-def">main</span>(<span class="cm-variable-3">void</span>)</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -28px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 19px;">4</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">{</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -28px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 19px;">5</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;<span class="cm-variable">printf</span>(<span class="cm-string">"hello world\n"</span>);</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -28px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 19px;">6</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -28px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 19px;">7</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;<span class="cm-keyword">return</span> <span class="cm-number">0</span>;</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -28px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt CodeMirror-linenumber-show" style="left: 0px; width: 19px;">8</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">}</span></pre></div></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 179px;"></div><div class="CodeMirror-gutters" style="height: 179px;"><div class="CodeMirror-gutter CodeMirror-linenumbers" style="width: 27px;"></div></div></div></div></pre><p>编译：</p><blockquote><p>deng@itcast:~/test$ gcc test.c -o test_share</p><p>deng@itcast:~/test$ gcc -static test.c -o test_static</p></blockquote><p>结果对比：</p><p><img src='assets/1527510332615.png' alt='1527510332615' referrerPolicy='no-referrer' /></p><p>参考博客：<a href='https://blog.csdn.net/freestyle4568world/article/details/49817799'>静态链接库与动态链接库 </a></p><p>&nbsp;</p><h2><a name='header-n505' class='md-header-anchor '></a>11. 静态库和动态库简介</h2><p>所谓“程序库”，简单说，就是包含了数据和执行码的文件。其不能单独执行，可以作为其它执行程序的一部分来完成某些功能。</p><p>库的存在可以使得程序模块化，可以加快程序的再编译，可以实现代码重用,可以使得程序便于升级。</p><p>程序库可分<strong>静态库(static library)</strong>和<strong>共享库(shared library)</strong>。</p><p>&nbsp;</p><h2><a name='header-n510' class='md-header-anchor '></a>12. 静态库制作和使用</h2><p>静态库可以认为是一些目标代码的集合，是在可执行程序运行前就已经加入到执行码中，成为执行程序的一部分。</p><p> 按照习惯,一般以“.a”做为文件后缀名。静态库的命名一般分为三个部分：</p><ul><li>前缀：lib</li><li>库名称：自己定义即可</li><li>后缀：.a</li></ul><p>所以最终的静态库的名字应该为：<strong>libxxx.a</strong></p><p><strong>1） 静态库制作</strong></p><p><img src='assets/clip_image002-1527510689190.jpg' alt='img' referrerPolicy='no-referrer' /> </p><p>步骤1：将c源文件生成对应的.o文件 </p><blockquote><p>deng@itcast:~/test/3static_lib$ gcc -c add.c -o add.o<br/>deng@itcast:~/test/3static_lib​$ gcc -c sub.c -o sub.o 
+deng@itcast:~/test/3static_lib​$ gcc -c mul.c -o mul.o
+deng@itcast:~/test/3static_lib​$ gcc -c div.c -o div.o </p></blockquote><p>步骤2：使用打包工具ar将准备好的.o文件打包为.a文件 libtest.a</p><blockquote><p>deng@itcast:~/test/3static_lib$ ar -rcs libtest.a add.o sub.o mul.o div.o </p></blockquote><p><strong>在使用ar工具是时候需要添加参数：rcs</strong></p><ul><li>r更新</li><li>c创建</li><li>s建立索引</li></ul><p>&nbsp;</p><p><strong>2）静态库使用</strong></p><p>静态库制作完成之后，需要将.a文件和头文件一起发布给用户。</p><p>假设测试文件为main.c，静态库文件为libtest.a头文件为head.h</p><p>编译命令：</p><blockquote><p>deng@itcast:~/test/4static_test$ gcc  test.c -L./ -I./ -ltest -o test</p></blockquote><p>参数说明：</p><ul><li>-L：表示要连接的库所在目录</li><li>-I./:  I(大写i) 表示指定头文件的目录为当前目录</li><li>-l(小写L)：指定链接时需要的库，去掉前缀和后缀</li></ul><p><img src='assets/clip_image002-1527510920275.jpg' alt='img' referrerPolicy='no-referrer' /> </p><h2><a name='header-n553' class='md-header-anchor '></a>13. 动态库制作和使用</h2><p>共享库在程序编译时并不会被连接到目标代码中，而是在程序运行是才被载入。不同的应用程序如果调用相同的库，那么在内存里只需要有一份该共享库的实例，规避了空间浪费问题。</p><p>动态库在程序运行是才被载入，也解决了静态库对程序的更新、部署和发布页会带来麻烦。用户只需要更新动态库即可，增量更新。</p><p>按照习惯,一般以“.so”做为文件后缀名。共享库的命名一般分为三个部分：</p><ul><li>前缀：lib</li><li>库名称：自己定义即可</li><li>后缀：.so</li></ul><p>所以最终的动态库的名字应该为：libxxx.so</p><p><img src='assets/clip_image002-1527511145606.jpg' alt='img' referrerPolicy='no-referrer' />    </p><p>&nbsp;</p><p><strong>1）动态库制作</strong></p><p>步骤一：生成目标文件，此时要加编译选项：-fPIC（fpic） </p><blockquote><p>deng@itcast:~/test/5share_lib$ gcc -fPIC -c add.c<br/>deng@itcast:~/test/5share_lib​$ gcc -fPIC -c sub.c
+deng@itcast:~/test/5share_lib$ gcc -fPIC -c mul.c
+deng@itcast:~/test/5share_lib​$ gcc -fPIC -c div.c</p></blockquote><p>参数：-fPIC 创建与地址无关的编译程序（pic，position independent code），是为了能够在多个应用程序间共享。 </p><p>步骤二：生成共享库，此时要加链接器选项: -shared（指定生成动态链接库）</p><blockquote><p>deng@itcast:~/test/5share_lib$ gcc -shared add.o sub.o mul.o div.o -o libtest.so</p></blockquote><p>步骤三: 通过nm命令查看对应的函数</p><blockquote><p>deng@itcast:~/test/5share_lib$ nm libtest.so | grep add
+00000000000006b0 T add
+deng@itcast:~/test/5share_lib​$ nm libtest.so | grep sub
+00000000000006c4 T sub</p></blockquote><p>&nbsp;</p><p>ldd查看可执行文件的依赖的动态库</p><blockquote><p>deng@itcast:~/share/3rd/2share_test$ ldd test 
+linux-vdso.so.1 =&gt;  (0x00007ffcf89d4000)
+libtest.so =&gt; /lib/libtest.so (0x00007f81b5612000)
+libc.so.6 =&gt; /lib/x86_64-linux-gnu/libc.so.6 (0x00007f81b5248000)
+/lib64/ld-linux-x86-64.so.2 (0x00005562d0cff000)</p></blockquote><p><strong>2）动态库测试</strong></p><p>引用动态库编译成可执行文件（跟静态库方式一样） </p><blockquote><p>deng@itcast:~/test/6share_test$ gcc test.c -L. -I. -ltest        (-I.  大写i    -ltest  小写L)</p></blockquote><p> 然后运行：./a.out，发现竟然报错了！！！</p><p><img src='assets/1527582099959.png' alt='1527582099959' referrerPolicy='no-referrer' /> </p><ul><li>当系统加载可执行代码时候，能够知道其所依赖的库的名字，但是还需要知道绝对路径。此时就需要系统动态载入器(dynamic linker/loader)。</li><li>对于elf格式的可执行程序，是由ld-linux.so*来完成的，它先后搜索elf文件的 DT_RPATH段 — 环境变量LD_LIBRARY_PATH — /etc/ld.so.cache文件列表 — <strong>/lib/, /usr/lib</strong>目录找到库文件后将其载入内存。 </li></ul><p>&nbsp;</p><p><strong>3）如何让系统找到动态库</strong></p><ul><li>拷贝自己制作的共享库到/lib或者/usr/lib(不能是/lib64目录)</li><li>临时设置LD_LIBRARY_PATH：</li></ul><blockquote><p>export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:库路径 </p></blockquote><ul><li><p>永久设置,把export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:库路径，设置到~/.bashrc或者 /etc/profile文件中</p><blockquote><p>deng@itcast:~/share/3rd/2share_test$ vim ~/.bashrc </p><p>最后一行添加如下内容:</p><p>export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/deng/share/3rd/2share_test</p></blockquote><p>使环境变量生效</p><blockquote><p>deng@itcast:~/share/3rd/2share_test$ source  ~/.bashrc 
+deng@itcast:~/share/3rd/2share_test​$ ./test<br/>a + b = 20
+a - b = 10</p></blockquote></li><li><p>将其添加到 /etc/ld.so.conf文件中</p><p>编辑/etc/ld.so.conf文件，加入库文件所在目录的路径</p><p>运行sudo ldconfig  -v，该命令会重建/etc/ld.so.cache文件</p><blockquote><p>deng@itcast:~/share/3rd/2share_test$ sudo vim /etc/ld.so.conf</p><p>文件最后添加动态库路径(绝对路径)</p></blockquote><p><img src='assets/1539308885923.png' alt='1539308885923' referrerPolicy='no-referrer' /></p><blockquote><p>使生效</p><p>deng@itcast:~/share/3rd/2share_test$ sudo ldconfig -v </p></blockquote></li><li><p>使用符号链接， 但是一定要使用绝对路径</p><p>deng@itcast:~/test/6share_test$ sudo ln -s /home/deng/test/6share_test/libtest.so  /lib/libtest.so</p></li></ul><p>&nbsp;</p><h2><a name='header-n627' class='md-header-anchor '></a>14. GDB调试器</h2><h3><a name='header-n628' class='md-header-anchor '></a>14.1 GDB简介</h3><p>GNU工具集中的调试器是GDB（GNU Debugger），该程序是一个交互式工具，工作在字符模式。</p><p>除gdb外，linux下比较有名的调试器还有xxgdb, ddd, kgdb, ups。</p><p> </p><p>GDB主要帮忙你完成下面四个方面的功能：</p><ol start='' ><li>启动程序，可以按照你的自定义的要求随心所欲的运行程序。</li><li>可让被调试的程序在你所指定的调置的断点处停住。（断点可以是条件表达式）</li><li>当程序被停住时，可以检查此时你的程序中所发生的事。</li><li>动态的改变你程序的执行环境。</li></ol><p>&nbsp;</p><h3><a name='header-n643' class='md-header-anchor '></a>14.2 生成调试信息</h3><p>一般来说GDB主要调试的是C/C++的程序。要调试C/C++的程序，首先在编译时，我们必须要把调试信息加到可执行文件中。使用编译器（cc/gcc/g++）的 -g 参数可以做到这一点。如： </p><blockquote><p>gcc -g hello.c -o hello</p><p>g++ -g hello.cpp -o hello</p></blockquote><p>如果没有-g，你将看不见程序的函数名、变量名，所代替的全是运行时的内存地址。 </p><p>&nbsp;</p><h3><a name='header-n650' class='md-header-anchor '></a>14.3 启动GDB</h3><ul><li><p>启动gdb：gdb program</p><p>program 也就是你的执行文件，一般在当前目录下。</p></li></ul><p> </p><ul><li><p>设置运行参数</p><p>set args     可指定运行时参数。（如：set args 10 20 30 40 50 ）</p><p>show args       命令可以查看设置好的运行参数。</p></li></ul><p> </p><ul><li><p>启动程序</p><p>run：   程序开始执行，如果有断点，停在第一个断点处</p><p>start： 程序向下执行一行。</p></li></ul><h3><a name='header-n667' class='md-header-anchor '></a>14.3 显示源代码 </h3><p>用list命令来打印程序的源代码。默认打印10行。</p><p>Ø  list linenum：     打印第linenm行的上下文内容.</p><p>Ø  list function：     显示函数名为function的函数的源程序。</p><p>Ø  list：      显示当前行后面的源程序。</p><p>Ø  list -：     显示当前行前面的源程序。</p><p> </p><p> 一般是打印当前行的上5行和下5行，如果显示函数是是上2行下8行，默认是10行，当然，你也可以定制显示的范围，使用下面命令可以设置一次显示源程序的行数。</p><p>Ø  set listsize count：设置一次显示源代码的行数。         </p><p>Ø  show listsize：        查看当前listsize的设置。</p><h3><a name='header-n677' class='md-header-anchor '></a>14.4 断点操作</h3><p><strong>1）简单断点</strong></p><p>break 设置断点，可以简写为b</p><p>Ø  b 10 设置断点，在源程序第10行</p><p>Ø  b func 设置断点，在func函数入口处</p><p>&nbsp;</p><p><strong>2）多文件设置断点</strong></p><p>C++中可以使用class::function或function(type,type)格式来指定函数名。</p><p> 如果有名称空间，可以使用namespace::class::function或者function(type,type)格式来指定函数名。</p><p>Ø  break filename:linenum  -- 在源文件filename的linenum行处停住</p><p>Ø  break filename:function -- 在源文件filename的function函数的入口处停住</p><p>Ø  break class::function或function(type,type) -- 在类class的function函数的入口处停住</p><p>Ø  break namespace::class::function -- 在名称空间为namespace的类class的function函数的入口处停住</p><p><strong>3）查询所有断点</strong> </p><ul><li>info b </li><li>info break </li><li>i break</li><li>i b</li></ul><h3><a name='header-n700' class='md-header-anchor '></a>14.5 条件断点</h3><p>一般来说，为断点设置一个条件，我们使用if关键词，后面跟其断点条件。</p><p>设置一个条件断点：</p><blockquote><p>b test.c:8 if Value == 5</p></blockquote><p>&nbsp;</p><h3><a name='header-n706' class='md-header-anchor '></a>14.6 维护断点 </h3><p>1）delete [range...] 删除指定的断点，其简写命令为d。</p><ul><li>如果不指定断点号，则表示删除所有的断点。range表示断点号的范围（如：3-7）。</li><li>比删除更好的一种方法是disable停止点，disable了的停止点，GDB不会删除，当你还需要时，enable即可，就好像回收站一样。</li></ul><p>2） disable [range...] 使指定断点无效，简写命令是dis。</p><p><span>	</span>如果什么都不指定，表示disable所有的停止点。</p><p>3） enable [range...] 使无效断点生效，简写命令是ena。</p><p><span>	</span>如果什么都不指定，表示enable所有的停止点。</p><p>&nbsp;</p><h3><a name='header-n718' class='md-header-anchor '></a>14.7  调试代码</h3><ul><li>run 运行程序，可简写为r</li><li>next 单步跟踪，函数调用当作一条简单语句执行，可简写为n</li><li>step 单步跟踪，函数调进入被调用函数体内，可简写为s</li><li>finish 退出进入的函数</li><li>until 在一个循环体内单步跟踪时，这个命令可以运行程序直到退出循环体,可简写为u。</li><li>continue 继续运行程序，停在下一个断点的位置，可简写为c</li><li>quit 退出gdb，可简写为q</li></ul><p>&nbsp;</p><h3><a name='header-n735' class='md-header-anchor '></a>14.8 数据查看</h3><p>1）查看运行时数据</p><p><span>	</span>print 打印变量、字符串、表达式等的值，可简写为p</p><p><span>	</span>p count 打印count的值</p><p>&nbsp;</p><h3><a name='header-n740' class='md-header-anchor '></a>14.9 自动显示</h3><p>你可以<strong>设置一些自动显示的变量</strong>，当程序停住时，或是在你单步跟踪时，这些变量会自动显示。相关的GDB命令是display。</p><ul><li>display 变量名</li><li>info display -- 查看display设置的自动显示的信息。</li><li>undisplay num（info display时显示的编号）</li><li>delete display dnums… -- 删除自动显示，dnums意为所设置好了的自动显式的编号。如果要同时删除几个，编号可以用空格分隔，如果要删除一个范围内的编号，可以用减号表示（如：2-5）</li><li>disable display dnums…</li><li>enable display dnums…</li><li>disable和enalbe不删除自动显示的设置，而只是让其失效和恢复。</li></ul><p> </p><h3><a name='header-n758' class='md-header-anchor '></a>14.10 查看修改变量的值 </h3><p>1）ptype width -- 查看变量width的类型<span>	</span></p><p><span>	</span>type = double</p><p>2）p width  --   打印变量width 的值</p><p><span>	</span>$4 = 13</p><p> 你可以使用set var命令来告诉GDB，width不是你GDB的参数，而是程序的变量名，如：</p><p>          set var width=47  // 将变量var值设置为47</p><p><strong>在你改变程序变量取值时，最好都使用set var格式的GDB命令</strong> </p></div>
+</body>
+</html>
