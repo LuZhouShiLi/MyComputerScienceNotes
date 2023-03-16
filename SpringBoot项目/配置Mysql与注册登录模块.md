@@ -130,3 +130,134 @@ public class User {
 
 ```
 
+
+### UserMapper映射层
+
+```java
+package com.kob.backedn2.mapper;
+
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.kob.backedn2.pojo.User;
+import org.apache.ibatis.annotations.Mapper;
+
+// 将增删改查的操作映射成sql语句
+@Mapper
+public interface UserMapper extends BaseMapper<User> {
+
+
+}
+
+```
+
+### UserController层
+
+```java
+package com.kob.backedn2.controller.user;
+import com.kob.backedn2.mapper.UserMapper;
+import com.kob.backedn2.pojo.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+public class UserController {
+
+    @Autowired
+    UserMapper userMapper;
+
+//     注解开发  获取所有的用户
+    @GetMapping("/user/all/")
+    public List<User> getAll(){
+        return userMapper.selectList(null);
+    }
+
+
+}
+```
+
+![图 1](../images/cc46971873f14c71a7a8fb4f48f35dff2701e3cd69e7613527a45584567a5945.png)  
+
+
+查询指定用户的信息
+
+```java
+package com.kob.backedn2.controller.user;
+
+
+import com.kob.backedn2.mapper.UserMapper;
+import com.kob.backedn2.pojo.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+public class UserController {
+    @Autowired
+    UserMapper userMapper;
+//     注解开发  获取所有的用户
+    @GetMapping("/user/all/")
+    public List<User> getAll(){
+        return userMapper.selectList(null);
+    }
+
+//    查询指定id的信息  userid 使用{} 进行包围
+    @GetMapping("/user/{userId}")
+    public User getuser(@PathVariable int userId){
+        return userMapper.selectById(userId);
+    }
+}
+
+```
+
+
+
+* 返回指定编号范围的所有用户
+
+```java
+package com.kob.backedn2.controller.user;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.kob.backedn2.mapper.UserMapper;
+import com.kob.backedn2.pojo.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
+
+@RestController
+public class UserController {
+    @Autowired
+    UserMapper userMapper;
+//     注解开发  获取所有的用户
+    @GetMapping("/user/all/")
+    public List<User> getAll(){
+        return userMapper.selectList(null);
+    }
+//    查询指定id的信息  userid 使用{} 进行包围
+    @GetMapping("/user/{userId}/")
+    public List<User> getuser(@PathVariable int userId){
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.ge("id",2).le("id",3);
+        return userMapper.selectList(queryWrapper);
+    }
+}
+
+
+```
+
+![图 2](../images/e4127d383a1074c0d4ab6de2e20b2661f8a6e21478dec4852c880c4f4be78338.png)  
+
+### 添加新用户
+
+后端controller层代码 解析浏览器地址栏输入的信息  然后userMapper将数据写入数据库
+
+
+
+
+
