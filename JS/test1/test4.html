@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script type = "text/javascript">
+        function sum(a,b){
+            return a + b;
+        }
+        var n = sum(3,5);// 接收 返回值 
+        alert(n);
+        
+        // 匿名函数 不需要写函数名
+        var fn = function(a,b){
+            alert(a * b);
+        }
+
+        fn(1,2);
+
+        // js没有函数重载的概念
+
+
+        // Js全局性函数  直接写函数名调用即可
+        var num = parseInt("5");
+        alert(num + 1);// 将字符串转换成int 数字
+
+        var num1 = parseFloat("5.5");
+        alert(num1);
+
+
+
+    </script>
+    
+
+
+</body>
+</html>

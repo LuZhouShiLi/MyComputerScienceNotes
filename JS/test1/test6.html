@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>类的定义和使用</title>
+</head>
+<body>
+    <script>
+        class Person{
+            // 构造方法
+            constructor(name,age){
+                this.name = name;
+                this.age = age;
+            }
+
+            // show方法  在页面中展示姓名  年龄
+            show(){
+                document.write(this.name + "," + this.age + "<br>");
+            }
+
+            eat(){
+                document.write("吃饭...");
+            }
+        }
+
+        // 定义worker类继承Person
+        class Worker extends Person{
+            constructor(name,age,salary){
+                super(name,age);// 将父类元素进行赋值
+                this.salary = salary;
+            }
+
+            show(){
+                document.write(this.name + "," + this.age + "," + this.salary + "<br>");
+            }
+        }
+
+        // 使用worker
+        let w = new Worke("张三",23,10000);
+        w.show();
+        w.eat();// 继承  子类对象 调用父类对象的方法   
+
+
+    </script>
+</body>
+</html>
