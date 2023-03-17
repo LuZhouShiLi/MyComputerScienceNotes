@@ -258,6 +258,205 @@ public class UserController {
 后端controller层代码 解析浏览器地址栏输入的信息  然后userMapper将数据写入数据库
 
 
+```java
+package com.kob.backedn2.controller.user;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.kob.backedn2.mapper.UserMapper;
+import com.kob.backedn2.pojo.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
+@RestController
+public class UserController {
+    @Autowired
+    UserMapper userMapper;
+//     注解开发  获取所有的用户
+    @GetMapping("/user/all/")
+    public List<User> getAll(){
+        return userMapper.selectList(null);
+    }
+//    查询指定id的信息  userid 使用{} 进行包围
+    @GetMapping("/user/{userId}/")
+    public User getuser(@PathVariable int userId){
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id",userId);
+        return userMapper.selectOne(queryWrapper);
+    }
+
+    // 插入指定用户数据
+    @GetMapping("/user/add/{userId}/{username}/{password}/")
+    public String addUser(@PathVariable int userId,@PathVariable String username,@PathVariable String password){
+        User user = new User(userId,username,password);
+        userMapper.insert(user);
+        return "Add User Successfully";
+    }
+}
+
+
+```
+
+
+
+### 删除用户数据
+
+```java
+
+    // 删除用户   判断urL格式  然后调用该函数
+    @GetMapping("/user/delete/{userId}/")
+    public String deleteUser(@PathVariable int userId){
+        userMapper.deleteById(userId);// 根据Id删除用户
+        return "Delete User Successfully";
+    }
+```
+
+## 集成 spring security
+
+### 将依赖导入pom.xml中  重启MAVEN
+
+```xml
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
+```
+
+密码会重新生成，输入登录，退出之后各种api就不能正常使用  登陆进去之后可以使用
+
+username:user
+password:控制台会输出 一串密码
+
+
+### 密码加密算法
+
+* UserDetailsServiceImpl
+
+```java
+package com.kob.backedn2.service.impl;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.kob.backedn2.mapper.UserMapper;
+import com.kob.backedn2.pojo.User;
+import com.kob.backedn2.service.impl.utils.UserDetailsImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+@Service
+public class UserDetailsServiceImpl implements UserDetailsService {
+
+    @Autowired
+    private UserMapper userMapper;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("username", username);
+        User user = userMapper.selectOne(queryWrapper);
+        if (user == null) {
+            throw new RuntimeException("用户不存在");
+        }
+
+        return new UserDetailsImpl(user);
+    }
+}
+
+
+```
+
+
+* UserDetailsImpl
+
+```java
+package com.kob.backedn2.service.impl.utils;
+
+import com.kob.backedn2.pojo.User;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserDetailsImpl implements UserDetails {
+
+    private User user;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
+
+    @Override
+    public String getPassword() {
+        return user.getPassword();
+    }
+
+    @Override
+    public String getUsername() {
+        return user.getUsername();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+}
+
+
+```
+
+* SecurityConfig
+
+```java
+package com.kob.backedn2.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}
+
+```
+
+![图 3](../images/4c2e8eb13d8d5f029eb9e546f658e88f8a2aae8de942441e4fe8f31ab43941e1.png)  
+
+![图 4](../images/c20294f6a65cda6e618f4bf449882eebe50a833689e7ffcb4db9d5f5e7a34a91.png)  
 
 
