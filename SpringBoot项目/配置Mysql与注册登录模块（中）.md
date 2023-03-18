@@ -217,4 +217,73 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 ```
 
+## 将用户表格设置成自增ID
+
+![图 3](../images/2f20f452d2f1b774925859609c3415921dda64d342bdf284b63a1a7d06e082c7.png)  
+
+## 在数据库创建新的列
+
+**存储用户头像，数据库存头像 存储的是链接**
+
+![图 5](../images/c99b4dc70690de89491eae39ae900ae3d0ef14a3efa3c5231561a97a91996a02.png)  
+
+
+**将自己的用户头像链接复制到数据库表格中**
+
+![图 6](../images/5598ec56c762914f2f23b06c841f74a15ef4f3ead1199a13d7d02304f955387a.png)  
+
+## 在Pojo.user类中添加注解
+
+设置ID自增
+
+```java
+package com.kob.backedn2.pojo;
+
+// 数据库一张表对应一个类  @data 将常用的get set方法 添加进去
+//@NoArgsConstructor  无参构造函数
+//@AllArgsConstructor  有参构造函数
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class User {
+    @TableId(type = IdType.AUTO)
+    private Integer id;
+    private String username;
+    private String password;
+    private String photo;
+}
+
+
+```
+
+## 实现/user/account/token/
+
+**验证用户名密码  验证成功之后 返回jwt token**
+
+
+
+
+
+
+
+
+## 实现/user/account/info/
+
+
+
+## 实现/user/account/register/
+
+
+
+
 
