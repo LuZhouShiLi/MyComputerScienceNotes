@@ -271,19 +271,497 @@ public class User {
 **验证用户名密码  验证成功之后 返回jwt token**
 
 
+### 创建LoginService接口
+
+```java
+package com.kob.backedn2.service.user.account;
+
+import java.util.Map;
+
+public interface LoginService {
+
+//     返回登录信息
+    public Map<String,String> login(String username, String password);
+}
+
+
+```
+
+
+### 创建RegisterService接口
+
+```java
+package com.kob.backedn2.service.user.account;
+
+import java.util.Map;
+
+public interface RegisterService {
+    public Map<String,String> register(String username, String password, String confirmedPassword);
+
+}
+```
+
+### 创建InfoService的接口
+```java
+package com.kob.backedn2.service.user.account;
+
+import java.util.Map;
+
+public interface InfoService {
+
+    public Map<String,String> getInfo();
+}
+
+
+```
+
+
+### 实现LoginServiceImpl接口
+
+```java
+package com.kob.backedn2.service.impl.user.account;
+import com.kob.backedn2.pojo.User;
+import com.kob.backedn2.service.impl.utils.UserDetailsImpl;
+import com.kob.backedn2.service.user.account.LoginService;
+import com.kob.backedn2.utils.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
+
+
+// 添加注解service
+@Service
+public class LoginServiceImpl implements LoginService {
+
+    // 需要用到的东西 都要注入进来  加上注解 autowired
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Override
+    public Map<String, String> login(String username, String password) {
+
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username,password);
+
+        // 登录失败 会自动处理
+        Authentication authenticate = authenticationManager.authenticate(authenticationToken);
+
+        // 登录成功 获得一个token对象
+
+        // 取出用户信息
+        UserDetailsImpl loginUser = (UserDetailsImpl) authenticate.getPrincipal();
+
+
+        User user = loginUser.getUser();// 获取用户对象
+
+        // 创建jwt token对象
+        String jwt  = JwtUtil.createJWT(user.getId().toString());
+
+
+        Map<String,String> map = new HashMap<>();
+
+        map.put("error_message","success");
+
+        map.put("token",jwt);
+        return map;
+    }
+}
+
+
+```
+
+
+## 实现LoginController
+
+**该类主要用来根据用户名和密码获取token**
+
+```java
+package com.kob.backedn2.controller.user.account;
+import com.kob.backedn2.service.user.account.LoginService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
+
+@RestController
+public class LoginController {
+
+//     注入service的接口
+    @Autowired
+    private LoginService loginService;
+
+    // 登录是post请求  将该链接公开化
+    @PostMapping("/user/account/token/")
+    public Map<String,String> getToken(@RequestParam Map<String,String> map){
+        String username = map.get("username");
+        String password = map.get("password");
+
+        // 根据用户名和密码 获取token
+        return loginService.getToken(username,password);
+    }
+}
+
+```
+
+## 实现InfoServiceImpl
+
+```java
+package com.kob.backedn2.service.impl.user.account;
+import com.kob.backedn2.pojo.User;
+import com.kob.backedn2.service.impl.utils.UserDetailsImpl;
+import com.kob.backedn2.service.user.account.InfoService;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@Service
+public class InfoServiceImpl implements InfoService {
+    @Override
+    public Map<String, String> getInfo() {
+         UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+         UserDetailsImpl loginUser = (UserDetailsImpl) authentication.getPrincipal();
+         User user = loginUser.getUser();
+         Map<String,String> map = new HashMap<>();
+         map.put("error_message","success");
+         map.put("id",user.getId().toString());
+         map.put("username",user.getUsername());
+         map.put("photo",user.getPhoto());
+         return map;
+    }
+}
+
+
+```
+
+
+## 实现InfoController
+
+```java
+package com.kob.backedn2.controller.user.account;
+
+import com.kob.backedn2.service.user.account.InfoService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import java.util.Map;
+@RestController
+public class InfoController {
+    @Autowired
+    private InfoService infoService;
+
+    @GetMapping("/user/account/info/")
+    public Map<String,String> getinfo(){
+        return infoService.getInfo();
+    }
+}
+```
+
+
+
+## 实现RegisterServiceImpl
+
+```java
+package com.kob.backedn2.service.impl.user.account;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.kob.backedn2.mapper.UserMapper;
+import com.kob.backedn2.pojo.User;
+import com.kob.backedn2.service.user.account.RegisterService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+
+@Service
+public class RegisterServiceImpl implements RegisterService {
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Override
+    public Map<String, String> register(String username, String password, String confirmedPassword) {
+        Map<String,String> map  = new HashMap<>();
+
+        if(username == null){
+            map.put("error_message","用户名不能为空");
+            return map;
+        }
+
+        if(password == null || confirmedPassword == null){
+            map.put("error_message","密码不能为空");
+            return map;
+        }
+
+        username = username.trim();
+        if(username.length() == 0){
+            map.put("error_message","用户名不能为空");
+            return map;
+        }
+
+        if(username.length() > 100){
+            map.put("error_message","用户名长度不能大于100");
+            return map;
+        }
+
+        if(password.length() == 0 || confirmedPassword.length() == 0){
+            map.put("error_message","密码长度不能为0");
+            return map;
+        }
+
+        if(password.length() > 100 || confirmedPassword.length() > 100){
+            map.put("error_message","密码长度不能大于100");
+            return map;
+        }
+
+
+        if(!password.equals(confirmedPassword)){
+            map.put("error_message","两次输入的密码不一致");
+            return map;
+        }
+
+
+        QueryWrapper<User> queryWrapper = new QueryWrapper<User>();
+        queryWrapper.eq("username",username);
+        List<User> users = userMapper.selectList(queryWrapper);
+
+        if(!users.isEmpty()){
+            map.put("error_message","用户名已经存在");
+            return map;
+        }
+
+        String encodedPassword = passwordEncoder.encode(password);
+        String photo = "https://cdn.acwing.com/media/user/profile/photo/130933_lg_b73ff6b43b.jpg";
+        User user = new User(null,username,password,photo);
+        userMapper.insert(user);
+
+        map.put("error_message","success");
+        return map;
+    }
+}
+
+
+```
+
+## 实现RegisterController
+
+```java
+package com.kob.backedn2.controller.user.account;
+
+
+import com.kob.backedn2.service.user.account.RegisterService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
+
+@RestController
+public class RegisterController {
+    @Autowired
+    private RegisterService registerService;
+
+    @PostMapping("/user/account/register/")
+    public Map<String,String>  register(@RequestParam Map<String,String> map){
+        String username = map.get("username");
+        String password = map.get("password");
+        String confirmedPassword = map.get("confirmedPassword");
+        return registerService.register(username,password,confirmedPassword);
+    }
+}
+
+```
 
 
 
 
+## 前端页面的实现
+
+* UserAccountLoginView
+
+```js
+<template>
+    <ContentField>
+        <div class="row justify-content-md-center">
+            <div class="col-3">
+                <form @submit.prevent="login">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">用户名</label>
+                        <input v-model="username" type="text" class="form-control" id="username" placeholder="请输入用户名">
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">密码</label>
+                        <input v-model="password" type="password" class="form-control" id="password" placeholder="请输入密码">
+                    </div>
+                    <div class="error-message">{{ error_message }}</div>
+                    <button type="submit" class="btn btn-primary">提交</button>
+                </form>
+            </div>
+        </div>
+    </ContentField>
+</template>
+
+<script>
+import ContentField from '../../../components/ContentField.vue'
+import { useStore } from 'vuex'
+import { ref } from 'vue'
+import router from '../../../router/index'
+
+export default {
+    components: {
+        ContentField
+    },
+    setup() {
+        const store = useStore();
+        let username = ref('');
+        let password = ref('');
+        let error_message = ref('');
+
+        const login = () => {
+            error_message.value = "";
+            store.dispatch("login", {
+                username: username.value,
+                password: password.value,
+                success() {
+                    store.dispatch("getinfo", {
+                        success() {
+                            router.push({ name: 'home' });
+                            console.log(store.state.user);
+                        }
+                    })
+                },
+                error() {
+                    error_message.value = "用户名或密码错误";
+                }
+            })
+        }
+
+        return {
+            username,
+            password,
+            error_message,
+            login,
+        }
+    }
+}
+</script>
+
+<style scoped>
+button {
+    width: 100%;
+}
+div.error-message {
+    color: red;
+}
+</style>
 
 
-## 实现/user/account/info/
+```
+
+* user.js
 
 
+```js
+import $ from 'jquery'
 
-## 实现/user/account/register/
+export default {
+    state: {
+        id: "",
+        username: "",
+        photo: "",
+        token: "",
+        is_login: false,
+    },
+    getters: {
+    },
+    mutations: {
+        updateUser(state, user) {
+            state.id = user.id;
+            state.username = user.username;
+            state.photo = user.photo;
+            state.is_login = user.is_login;
+        },
+        updateToken(state, token) {
+            state.token = token;
+        },
+        logout(state) {
+            state.id = "";
+            state.username = "";
+            state.photo = "";
+            state.token = "";
+            state.is_login = false;
+        }
+    },
+    actions: {
+        login(context, data) {
+            $.ajax({
+                url: "http://127.0.0.1:3000/user/account/token/",
+                type: "post",
+                data: {
+                    username: data.username,
+                    password: data.password,
+                },
+                success(resp) {
+                    if (resp.error_message === "success") {
+                        context.commit("updateToken", resp.token);
+                        data.success(resp);
+                    } else {
+                        data.error(resp);
+                    }
+                },
+                error(resp) {
+                    data.error(resp);
+                }
+            });
+        },
+        getinfo(context, data) {
+            $.ajax({
+                url: "http://127.0.0.1:3000/user/account/info/",
+                type: "get",
+                headers: {
+                    Authorization: "Bearer " + context.state.token,
+                },
+                success(resp) {
+                    if (resp.error_message === "success") {
+                        context.commit("updateUser", {
+                            ...resp,
+                            is_login: true,
+                        });
+                        data.success(resp);
+                    } else {
+                        data.error(resp);
+                    }
+                },
+                error(resp) {
+                    data.error(resp);
+                }
+            })
+        },
+        logout(context) {
+            context.commit("logout");
+        }
+    },
+    modules: {
+    }
+}
 
 
-
+```
 
 
