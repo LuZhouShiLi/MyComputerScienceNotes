@@ -555,7 +555,6 @@ public class RegisterServiceImpl implements RegisterService {
     }
 }
 
-
 ```
 
 ## 实现RegisterController
@@ -760,8 +759,6 @@ export default {
     modules: {
     }
 }
-
-
 ```
 
 
