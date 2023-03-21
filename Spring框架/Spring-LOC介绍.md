@@ -461,7 +461,7 @@ public class UserServiceImpl implements UserService {
 
 * applicationContext.xml
 
-```xml
+```java
 package com.itheima.service.impl;
 
 import com.itheima.dao.UserDao;
@@ -500,6 +500,279 @@ public class UserServiceImpl implements UserService {
 
 
 ```
+
+
+### 构造方法注入资源
+
+![图 8](../images/9701bbfdba4246a834868877362d4256a0a5cdcea561e2506963c91419c0a429.png)  
+
+
+```xml
+<!--        构造方法注入资源-->
+<!--    将要注入的资源封装成bean-->
+    <bean id = "userDao" class = "com.itheima.dao.impl.UserDaoImpl"/>
+
+    <bean id = "userService" class = "com.itheima.service.impl.UserServiceImpl">
+        <constructor-arg ref = "userDao"/>
+    </bean>
+```
+
+## 读取properties文件信息
+
+**使用读取到的数据给bean属性赋值**
+
+![图 12](../images/adfd92acf44da85d9f41969cde3cc4b5cda550ff3e6e547a1c4f36008c8154c6.png)  
+
+
+### 原始的set注入方法
+
+```xml
+<!--    将要注入的资源封装成Bean-->
+    <bean id = "userDao" class = "com.itheima.dao.impl.UserDaoImpl"/>
+    <bean id = "bookDao" class = "com.itheima.dao.impl.BookDaoImpl"/>
+
+<!--    ref 是注入资源的id属性  name是变量名-->
+    <bean id = "userService" class = "com.itheima.service.impl.UserServiceImpl">
+        <property name="userDao" ref = "userDao"/>
+        <property name="bookDao" ref = "bookDao"/>
+    </bean>
+
+```
+
+### 读取配置文件进行注入资源
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--   加载配置文件-->
+    <context:property-placeholder location="classpath:data.properties"/>
+
+<!--    将要注入的资源封装成Bean-->
+<!--    同时userDao 和bookDao中有些属性也需要外部注入资源  读取properties中的两个变量名  赋值给value-->
+    <bean id = "userDao" class = "com.itheima.dao.impl.UserDaoImpl">
+        <property name="userName" value = "${username}"/>
+        <property name="password" value = "${pwd}"/>
+    </bean>
+
+
+    <bean id = "bookDao" class = "com.itheima.dao.impl.BookDaoImpl"/>
+
+<!--    ref 是注入资源的id属性 主要是针对引用类型资源  如果是非引用 直接value  name是变量名-->
+    <bean id = "userService" class = "com.itheima.service.impl.UserServiceImpl">
+        <property name="userDao" ref = "userDao"/>
+        <property name="bookDao" ref = "bookDao"/>
+    </bean>
+</beans>
+
+```
+
+## import导入配置文件
+
+
+**当团队协作的时候,xml文件过多可以配置多个xml文件，最后进行导入**
+
+![图 13](../images/c32dd9daa39505439fa8d3520cd96202ecca360c3b91e623a7bb0db17f47b544.png)  
+
+### applicationContext.xml
+
+**该配置文件需要使用userDao和bookDao的资源**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--   加载配置文件-->
+    <context:property-placeholder location="classpath:data.properties"/>
+
+<!--    将要注入的资源封装成Bean-->
+<!--    同时userDao 和bookDao中有些属性也需要外部注入资源  读取properties中的两个变量名  赋值给value-->
+<!--    <bean id = "userDao" class = "com.itheima.dao.impl.UserDaoImpl">-->
+<!--        <property name="userName" value = "${username}"/>-->
+<!--        <property name="password" value = "${pwd}"/>-->
+<!--    </bean>-->
+
+<!--    <bean id = "bookDao" class = "com.itheima.dao.impl.BookDaoImpl"/>-->
+
+<!--&lt;!&ndash;    ref 是注入资源的id属性 主要是针对引用类型资源  如果是非引用 直接value  name是变量名&ndash;&gt;-->
+<!--    <bean id = "userService" class = "com.itheima.service.impl.UserServiceImpl">-->
+<!--        <property name="userDao" ref = "userDao"/>-->
+<!--        <property name="bookDao" ref = "bookDao"/>-->
+<!--    </bean>-->
+
+<!--    将其余的配置文件导入进来-->
+        <import resource="applicationContext-user.xml"/>
+        <import resource="applicationContext-book.xml"/>
+
+
+<!--    &lt;!&ndash;2.加载配置文件&ndash;&gt;-->
+<!--    <context:property-placeholder location="classpath:*.properties"/>-->
+
+<!--    <bean id="userDao" class="com.itheima.dao.impl.UserDaoImpl">-->
+<!--        <property name="userName" value="${username}"/>-->
+<!--        <property name="password" value="${pwd}"/>-->
+<!--    </bean>-->
+
+<!--    <bean id="bookDao" class="com.itheima.dao.impl.BookDaoImpl"/>-->
+
+<!--    <bean id="userService" class="com.itheima.service.impl.UserServiceImpl">-->
+<!--        <property name="userDao" ref="userDao"/>-->
+<!--        <property name="bookDao" ref="bookDao"/>-->
+<!--    </bean>-->
+
+<!--    <import resource="applicationContext-user.xml"/>-->
+<!--    <import resource="applicationContext-book2.xml"/>-->
+<!--    <import resource="applicationContext-book.xml"/>-->
+
+<!--    <bean id="bookDao" class="com.itheima.dao.impl.BookDaoImpl">-->
+<!--        <property name="num" value="3"/>-->
+<!--    </bean>-->
+
+
+<!--    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">-->
+<!--        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>-->
+<!--        <property name="url" value="jdbc:mysql://localhost:3306/spring_db"/>-->
+<!--        <property name="username" value="root"/>-->
+<!--        <property name="password" value="itheima"/>-->
+<!--    </bean>-->
+
+
+</beans>
+
+```
+
+
+### ### applicationContext-user.xml
+
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <bean id="userDao" class="com.itheima.dao.impl.UserDaoImpl">
+        <property name="userName" value="${username}"/>
+        <property name="password" value="${pwd}"/>
+    </bean>
+
+    <bean id="userService" class="com.itheima.service.impl.UserServiceImpl">
+        <property name="userDao" ref="userDao"/>
+    </bean>
+
+</beans>
+```
+
+### ### applicationContext-book.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <bean id="bookDao" class="com.itheima.dao.impl.BookDaoImpl">
+<!--        name是变量名  value属性直接注入-->
+        <property name="num" value="1"/>
+    </bean>
+    <bean id="userService" class="com.itheima.service.impl.UserServiceImpl">
+        <property name="bookDao" ref="bookDao"/>
+    </bean>
+</beans>
+
+```
+
+## 第三方bean配置
+
+**阿里数据源druid**
+
+
+### 首先在pom.xml 导入依赖
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.itheima</groupId>
+    <artifactId>Spring_day01_04_实用开发相关配置</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>5.1.9.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+            <version>1.1.16</version>
+        </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>com.alibaba</groupId>-->
+<!--            <artifactId>druid</artifactId>-->
+<!--            <version>1.1.16</version>-->
+<!--        </dependency>-->
+    </dependencies>
+</project>
+
+```
+
+### applicationContext.xml中配置资源
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--   加载配置文件-->
+    <!-- <context:property-placeholder location="classpath:data.properties"/> -->
+
+    <bean id = "dataSource" class = "com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value = "jdbc:mysql://localhost:3306/kob"/>
+        <property name="username" value="root"/>
+        <property name="password" value="123456"/>
+    </bean>
+
+</beans>
+
+```
+
 
 
 
