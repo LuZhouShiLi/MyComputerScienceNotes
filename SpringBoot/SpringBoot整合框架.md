@@ -222,5 +222,67 @@ public interface UserXmlMapper {
 
 **映射配置文件**
 
+```yml
+# datasource配置
+spring:
+  datasource:
+    url: jdbc:mysql:///db11?serverTimezone=UTC
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
 
+# 指定mybatis的核心配置文件
+mybatis:
+  mapper-locations: classpath:mapper/*Mapper.xml  # mapper映射文件路径
+  type-aliases-package: com.itheima.springbootmybatis.domain
+#  config-location:
+
+
+```
+
+**利用springboot整合Mybatis测试**
+```java
+
+package com.itheima.springbootmybatis;
+
+import com.itheima.springbootmybatis.domain.User;
+import com.itheima.springbootmybatis.mapper.UserMapper;
+import com.itheima.springbootmybatis.mapper.UserXmlMapper;
+import org.apache.ibatis.annotations.Mapper;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.List;
+
+@SpringBootTest
+class SpringbootMybatisApplicationTests {
+    @Autowired
+    private UserMapper userMapper;// 注入Mapper接口资源
+
+    @Autowired
+    private UserXmlMapper userXmlMapper;
+
+    @Test
+    public void testFindAll(){
+        // 调用接口方法
+        List<User> all = userMapper.findAll();
+        System.out.println(all);
+    }
+
+    @Test
+    public void testFindAll1(){
+        // 调用接口方法
+        List<User> all = userXmlMapper.findAll();
+        System.out.println(all);
+    }
+
+    @Test
+    void contextLoads() {
+    }
+
+}
+
+
+```
