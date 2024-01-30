@@ -29,7 +29,6 @@ CREATE TABLE `activity` (
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='活动配置';
 
 
-
 ```
 
 * 出现该问题的原因是因为:发现给了时间字段的列默认值一个 CURRENT_TIMESTAMP 默认值，而这个默认值在低版本的 MySQL 中是不支持的 删除即可 改成NULL
