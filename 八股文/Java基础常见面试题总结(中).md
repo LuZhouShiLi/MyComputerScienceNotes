@@ -102,5 +102,93 @@ true
 ![图 0](../images/b32a39a1fb3ca3c6d0040e6b5644f3d9cf61bd1e42ae5cae001e2538ada02aea.png)  
 
 
+## Object 类的常见方法有哪些？
+
+* Object 类是一个特殊的类，是所有类的父类
+
+
+
+## == 和 equals() 的区别
+
+
+== 对于基本类型和引用类型的作用效果是不同的：
+
+* 对于基本数据类型来说，== 比较的是值。
+* 对于引用数据类型来说，== 比较的是对象的内存地址。
+
+equals() 不能用于判断基本数据类型的变量，只能用来判断两个对象是否相等。equals()方法存在于Object类中，而Object类是所有类的直接或间接父类，因此所有的类都有equals()方法
+
+
+
+* 类没有重写 equals()方法：通过equals()比较该类的两个对象时，等价于通过“==”比较这两个对象，使用的默认是 Object类equals()方法。
+* 类重写了 equals()方法：一般我们都重写 equals()方法来比较两个对象中的属性是否相等；若它们的属性相等，则返回 true(即，认为这两个对象相等)。
+
+
+**String中的equals方法是被重写过的，因为Object的equals方法是比较的对象的内存地址，而String的equals方法比较的是对象的值**
+
+
+## hashCode() 有什么用？
+
+* hashCode的作用是获取哈希码，也称之为散列码，这个哈希码的作用是确定该对象在哈希表中的索引位置
+
+* 当你把对象加入 HashSet 时，HashSet 会先计算对象的 hashCode 值来判断对象加入的位置，同时也会与其他已经加入的对象的 hashCode 值作比较，如果没有相符的 hashCode，HashSet 会假设对象没有重复出现。但是如果发现有相同 hashCode 值的对象，这时会调用 equals() 方法来检查 hashCode 相等的对象是否真的相同。如果两者相同，HashSet 就不会让其加入操作成功。如果不同的话，就会重新散列到其他位置。这样我们就大大减少了 equals 的次数，相应就大大提高了执行速度
+
+* hashCode() 和equals()都是用于比较两个对象是否相等
+  * 添加元素进入HashSet的时候，同样的HashCode有多个对象，它会继续使用equals()来判断是否真的相同，也就是说hashCode帮助我们大大缩小查找成本
+  * 但是两个对象的hashCode值相等不代表两个对象相等，因为hashCode()使用的哈希算法也许刚好会让多个对象传回相同的哈希值，越糟糕的哈希算法越容易碰撞（哈希碰撞指的是不同的对象得到的相同的hashCode）
+
+总结：
+* 两个对象的HashCode相等，两个对象不一定相等
+* 两个对象的HashCode值相等并且equals()方法也返回true,才认为这两个对象相等
+* 如果两个对象的HashCode值不相等，那么我们我们直接认为两个对象不相等
+
+
+
+
+## 为什么重写 equals() 时必须重写 hashCode() 方法？
+
+**因为两个相等的对象的 hashCode 值必须是相等。也就是说如果 equals 方法判断两个对象是相等的，那这两个对象的 hashCode 值也要相等。如果重写 equals() 时没有重写 hashCode() 方法的话就可能会导致 equals 方法判断是相等的两个对象，hashCode 值却不相等。**
+
+
+## String、StringBuffer、StringBuilder 的区别？
+
+### 可变性
+
+* String 是不可变的
+
+* StringBuilder 与 StringBuffer 都继承自 AbstractStringBuilder 类，在 AbstractStringBuilder 中也是使用字符数组保存字符串，不过没有使用 final 和 private 关键字修饰，最关键的是这个 AbstractStringBuilder 类还提供了很多修改字符串的方法比如 append 方法。
+
+### 线程安全性
+
+* String 中的对象是不可变的，也就可以理解为常量，线程安全。AbstractStringBuilder 是 StringBuilder 与 StringBuffer 的公共父类，定义了一些字符串的基本操作，如 expandCapacity、append、insert、indexOf 等公共方法。StringBuffer 对方法加了同步锁或者对调用的方法加了同步锁，所以是线程安全的。StringBuilder 并没有对方法进行加同步锁，所以是非线程安全的。
+
+
+
+
+
+### 性能
+
+* 每次对 String 类型进行改变的时候，都会生成一个新的 String 对象，然后将指针指向新的 String 对象。StringBuffer 每次都会对 StringBuffer 对象本身进行操作，而不是生成新的对象并改变对象引用。相同情况下使用 StringBuilder 相比使用 StringBuffer 仅能获得 10%~15% 左右的性能提升，但却要冒多线程不安全的风险。
+
+
+### String 为什么是不可变的?
+
+
+* String 类中使用 final 关键字修饰字符数组来保存字符串
+
+
+### 字符串拼接用“+” 还是 StringBuilder?
+
+
+* Java 语言本身并不支持运算符重载，“+”和“+=”是专门为 String 类重载过的运算符，也是 Java 中仅有的两个重载过的运算符
+* 字符串对象通过“+”的字符串拼接方式，实际上是通过 StringBuilder 调用 append() 方法实现的，拼接完成之后调用 toString() 得到一个 String 对象
+
+### String#equals() 和 Object#equals() 有何区别？
+
+
+* String 中的 equals 方法是被重写过的，比较的是 String 字符串的值是否相等。 Object 的 equals 方法是比较的对象的内存地址
+
+
+
 
 
