@@ -63,20 +63,40 @@
 ```
 
 * 以上命令使针对低版本的Kafka,对于新版本的Kafka 已经不需要依赖Zookeeper来创建topic ,新版本使用 --bootstrap-server替换老版本的 --zookeeper-server
-* **新版本的kafka创建topic的方式改变了，不能继续使用--zookeeper创建了，要使用--bootstrap-server创建**
+* **新版本的kafka创建topic的方式改变了，不能继续使用--zookeeper创建了，要使用--bootstrap-server创建,需要使用Kafka端口，默认是9092。**
 
 ```
-
- .\bin\windows\kafka-topics.bat --create --bootstrap-server localhost:2181 --replication-factor 1 --partitions 1 Hello_Kafka
+ .\bin\windows\kafka-topics.bat --create --bootstrap-server localhost:9092--replication-factor 1 --partitions 1 Hello_Kafka
 ```
 
 
 * 查看主题命令
 
 ```
- .\bin\windows\kafka-topics.bat --list --zookeeper localhost:2181
+ .\bin\windows\kafka-topics.bat --list --bootstrap-server localhost:9092
 
 ```
+
+
+
+
+## 发送消息  
+
+
+* 启动生产者
+```
+ .\bin\windows\kafka-console-producer.bat --broker-list localhost:9092 --topic Hello_Kafka
+
+```
+
+* 启动消防者监听消息
+
+```
+ .\bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic Hello_Kafka
+```
+
+
+![图 9](../images/5ec8e14dfc17bbf8b2f612d9efca51ffe798af4e0f2f1217ce760fd02d57cfd0.png)  
 
 
 
