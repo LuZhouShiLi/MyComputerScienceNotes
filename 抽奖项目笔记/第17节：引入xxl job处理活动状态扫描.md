@@ -186,6 +186,141 @@ http://localhost:7397/xxl-job-admin/jobinfo?jobGroup=1
 * 每一个执行器下就会对应一组带执行的 job 任务，来完成我们自己的任务调度。
 
 
+## 任务扫描活动状态
+
+
+
+### 引入POM
+
+
+```java
+<dependency>
+    <groupId>com.xuxueli</groupId>
+    <artifactId>xxl-job-core</artifactId>
+    <version>2.3.0</version>
+</dependency>
+
+
+```
+* 把需要使用 xxl-job 的包，引入对应的 POM 配置
+* 同时需要将xxl-job直接打包成jar包
+
+
+### 配置 application.yml
+
+
+```yml
+xxl:
+  job:
+    admin:
+      addresses: http://127.0.0.1:7397/xxl-job-admin
+    executor:
+      address:
+      appname: lottery-job
+      ip:
+      port: 9999
+      logpath: /Users/fuzhengwei/itstack/data/applogs/xxl-job/jobhandler
+      logretentiondays: 50
+    accessToken:
+
+
+```
+
+
+* 配置中主要包括你的服务地址，应用名称、日志路径等
+
+
+### 任务初始类
+
+* 这里需要启动一个任务执行器  通过配置@Bean对象的方式交给Spring进行管理
+
+```java
+package cn.itedus.lottery.application.worker;
+
+
+import com.xxl.job.core.executor.impl.XxlJobSpringExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * xxl-job 分布式任务调度的配置类
+ * 将yml中的配置 写成Bean 交给Spring进行管理  @Value进行读取
+ */
+@Configuration
+public class LotteryXxlJobConfig {
+
+    private Logger logger = LoggerFactory.getLogger(LotteryXxlJobConfig.class);
+
+    @Value("${xxl.job.admin.addresses}")
+    private  String adminAddresses;
+
+    @Value("${xxl.job.accessToken}")
+    private  String accessToken;
+
+    @Value("{xxl.job.executor.appname}")
+    private String appname;
+
+    @Value("{xxl.job.executor.address}")
+    private String address;
+
+
+    @Value("{xxl.job.executor.ip}")
+    private String ip;
+
+    @Value("{xxl.job.executor.port}")
+    private int port;
+
+    @Value("{xxl.job.executor.logpath}")
+    private String logPath;
+
+    @Value("{xxl.job.executor.logretentiondays}")
+    private int logRetentionDays;
+
+
+    // 构造器 声明为Bean资源  导入之前将xxl-job 打包成Jar包
+    public XxlJobSpringExecutor xxlJobExecutor() {
+        logger.info(">>>>>>>>>>> xxl-job config init.");
+
+        XxlJobSpringExecutor xxlJobSpringExecutor = new XxlJobSpringExecutor();
+        xxlJobSpringExecutor.setAdminAddresses(adminAddresses);
+        xxlJobSpringExecutor.setAppname(appname);
+        xxlJobSpringExecutor.setAddress(address);
+        xxlJobSpringExecutor.setIp(ip);
+        xxlJobSpringExecutor.setPort(port);
+        xxlJobSpringExecutor.setAccessToken(accessToken);
+        xxlJobSpringExecutor.setLogPath(logPath);
+        xxlJobSpringExecutor.setLogRetentionDays(logRetentionDays);
+
+        return xxlJobSpringExecutor;
+    }
+
+
+}
+
+
+```
+
+
+* 这段代码是一个用于XXL-JOB客户端的Java类，主要的功能是将应用程序中与XXL-JOB相关的配置项读取出来，并且初始化一个XXljOBsPRINGeXEXCITOR实例，这个实例用于XXL-JOB的调度中心进行通信，实现任务的分发和执行等功能
+* Configuration表示这是一个配置类，目的是将application.yml文件中关于XXL-JOB配置的部分读取出来 并且以Bean资源的形式交给Spring容器进行管理
+* 成员变量通过Value注解，类中的成员变量被赋值为对应配置文件中的值 包括adminAddress: XXL-JOB调度中心的地址
+* accessToken:访问调度中心所需要的令牌
+* appname address ip port 执行器的基本配置 包括应用名称 地址 IP和端口
+* logPath 和logRetentionDays:日志存储的路径和日志保留的天数
+
+
+
+* 构造方法xxlJobExecutor() 这个方法是关键 创建并且返回一个XxlJobSpringExecutor实例，这个实例是XXL-JOB客户端和调度中心交互的核心
+* 在这个方法中 首先打印一条日志信息表示XXL-JOB的配置开始初始化
+* 然后创建XXLJobSpringExecutor对象 并且使用前面通过Value注解读取的配置值对他进行配置
+* 最后 返回这个配置好的XxlJobSpringExecutor实例
+
+
+
+
+
 
 
 
