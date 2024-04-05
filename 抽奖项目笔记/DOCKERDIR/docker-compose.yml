@@ -1,0 +1,155 @@
+version: "2.1"
+services:
+  lottery-nacos:
+    container_name: lottery-nacos
+    image: nacos/nacos-server:v2.0.3
+    build:
+      context: ./nacos
+      dockerfile: Dockerfile
+    environment:
+      - PREFER_HOST_MODE=ip 
+      - MODE=standalone
+      - SPRING_DATASOURCE_PLATFORM=mysql 
+      - MYSQL_SERVICE_HOST=lottery-mysql 
+      - MYSQL_SERVICE_PORT=3306 
+      - MYSQL_SERVICE_USER=root 
+      - MYSQL_SERVICE_PASSWORD=Cao112233.. 
+      - MYSQL_SERVICE_DB_NAME=nacos_config 
+      - TIME_ZONE='Asia/Shanghai' 
+      - JVM_XMS=256m 
+      - JVM_XMX=256m 
+      - JVM_XMN=64m 
+    volumes:
+      - ./nacos/logs/:/home/nacos/logs
+      - ./nacos/conf/application.properties:/home/nacos/conf/application.properties
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+      - "9849:9849"
+    depends_on:
+      - lottery-mysql
+    links:
+      - lottery-mysql
+  lottery-mysql:
+    container_name: lottery-mysql
+    image: mysql:5.7
+    build:
+      context: ./mysql
+      dockerfile: Dockerfile
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql/conf:/etc/mysql/conf.d
+      - ./mysql/logs:/logs
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/db:/docker-entrypoint-initdb.d/
+    command: [
+      'mysqld',
+      '--innodb-buffer-pool-size=80M',
+      '--character-set-server=utf8mb4',
+      '--collation-server=utf8mb4_bin',
+      '--default-time-zone=+8:00',
+      '--lower-case-table-names=1'
+    ]
+    environment:
+      MYSQL_ROOT_PASSWORD: 'Cao112233..'
+  lottery-redis:
+    container_name: lottery-redis
+    image: redis
+    build:
+      context: ./redis
+      dockerfile: Dockerfile
+
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis/conf/redis.conf:/home/lottery/redis/redis.conf
+      - ./redis/data:/data
+    command: redis-server /home/lottery/redis/redis.conf
+  lottery-zookeeper:
+    image: wurstmeister/zookeeper   ## 镜像
+    container_name: lottery-zookeeper
+    ports:
+      - "2181:2181"                 ## 对外暴露的端口号
+  lottery-kafka:
+    image: wurstmeister/kafka       ## 镜像
+    container_name: lottery-kafka
+    volumes: 
+        - /etc/localtime:/etc/localtime ## 挂载位置（kafka镜像和宿主机器之间时间保持一直）
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 0
+      KAFKA_ZOOKEEPER_CONNECT: lottery-zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://lottery-kafka:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092 
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
+    depends_on:
+      - lottery-zookeeper
+    links:
+      - lottery-zookeeper
+  
+  lottery-website:
+    container_name: lottery-website
+    image: nginx
+    build:
+      context: ./website
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - ./website/conf/nginx.conf:/etc/nginx/nginx.conf
+      - ./website/logs:/var/log/nginx
+      - ./website/conf.d:/etc/nginx/conf.d
+      - ./website/html:/usr/share/nginx/html 
+    depends_on:
+      - lottery-api
+    links:
+      - lottery-api
+  lottery-api:
+    container_name: lottery-api
+    build:
+      context: ./lottery/api
+      dockerfile: Dockerfile
+    ports:
+      - "9001:9001"
+    depends_on:
+      - lottery-redis
+    links:
+      - lottery-redis
+  lottery-draw:
+    container_name: lottery-draw
+    build:
+      context: ./lottery/draw
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
+    depends_on:
+      - lottery-redis
+      - lottery-mysql
+      - lottery-nacos
+    links:
+      - lottery-redis
+      - lottery-mysql
+      - lottery-nacos
+  lottery-erp:
+    container_name: lottery-erp
+    image: tomcat:8
+    restart: always
+    build:
+      context: ./lottery/erp
+      dockerfile: Dockerfile
+    environment:
+      - TZ="Asia/Shanghai"
+    volumes:
+      - ./lottery/erp/webapps:/usr/local/tomcat/webapps/ 
+      - ./lottery/erp/conf/server.xml:/usr/local/tomcat/conf/server.xml
+    ports:
+      - "8080:8080"
+    depends_on:
+      - lottery-draw
+    links:
+      - lottery-draw
+    
+
