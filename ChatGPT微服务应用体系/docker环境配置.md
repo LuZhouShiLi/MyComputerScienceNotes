@@ -89,3 +89,19 @@ docker run hello-world
 * docker run hello-world 是一个用于验证 Docker 是否正确安装并能够在您的系统上运行容器的命令。此命令会尝试找到本地名为 hello-world 的镜像，如果未找到，它会从 Docker Hub（一个公共的容器镜像仓库）下载该镜像，并在容器中运行
 
 
+## Docker常用的命令
+
+
+```
+
+[root@CodeGuide ~]# docker --help    #Docker帮助
+[root@CodeGuide ~]# docker --version   #查看Docker版本
+[root@CodeGuide ~]# docker search <image>  #搜索镜像文件，如：docker search mysql
+[root@CodeGuide ~]# docker pull <image>  #拉取镜像文件， 如：docker pull mysql
+[root@CodeGuide ~]# docker images    #查看已经拉取下来的所以镜像文件
+[root@CodeGuide ~]# docker rmi <image>  #删除指定镜像文件
+[root@CodeGuide ~]# docker run --name <name> -p 80:8080 -d <image>  #发布指定镜像文件
+[root@CodeGuide ~]# docker ps     #查看正在运行的所有镜像
+[root@CodeGuide ~]# docker ps -a    #查看所有发布的镜像
+[root@CodeGuide ~]# docker rm <image>   #删除执行已发布的镜像
+```
